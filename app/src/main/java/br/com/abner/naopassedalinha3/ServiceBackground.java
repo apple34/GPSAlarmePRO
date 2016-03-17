@@ -1,5 +1,8 @@
 package br.com.abner.naopassedalinha3;
 
+import android.app.AlertDialog;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -10,11 +13,20 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v4.app.TaskStackBuilder;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.identity.intents.AddressConstants;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Abner on 26/02/2016.
@@ -24,10 +36,13 @@ public class ServiceBackground extends Service {
     private LocationManager mLocationManager = null;
     private static final int LOCATION_INTERVAL = 100;
     private static final float LOCATION_DISTANCE = 0.1f;
+    public List<Marcadores> marcadores;
+    private BDNew bdNew;
 
     private class LocationListener implements android.location.LocationListener
     {
         Location mLastLocation;
+        List<Marcadores> marcadores;
 
         public LocationListener(String provider)
         {
@@ -35,11 +50,17 @@ public class ServiceBackground extends Service {
             mLastLocation = new Location(provider);
         }
 
+        public LocationListener( List<Marcadores> marcadores ){
+            Log.e(TAG, "LocationListener Marcadores" + marcadores.toString());
+            this.marcadores = marcadores;
+        }
+
         @Override
         public void onLocationChanged(Location location)
         {
             Log.e(TAG, "onLocationChanged: " + location);
             mLastLocation.set(location);
+            gpsAlarm( location );
         }
 
         @Override
@@ -59,6 +80,58 @@ public class ServiceBackground extends Service {
         {
             Log.e(TAG, "onStatusChanged: " + provider);
         }
+
+        private void gpsAlarm( Location location ){
+            Log.i("Alarm", "gpsAlarm() level 1");
+            for (final Marcadores m : bdNew.buscar()) {
+                if (m != null && m.getAtivo() == 1) {
+                    final int distance = (int) SphericalUtil.computeDistanceBetween(
+                            new LatLng(location.getLatitude(), location.getLongitude())
+                            , new LatLng(m.getLatitude(), m.getLongitude()));
+                    if (distance < m.getDistancia()) {
+                        final NotificationCompat.Builder notifBuilder =
+                                (NotificationCompat.Builder) new NotificationCompat.Builder(getApplicationContext())
+                                        .setSmallIcon(R.drawable.alarmgps)
+                                        .setContentTitle(m.getEndereco())
+                                        .setVibrate(new long[]{500, 10000});
+
+                        final Intent resultIntent = new Intent(getApplicationContext(), MapsActivity.class);
+
+                        TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
+                        stackBuilder.addParentStack(MapsActivity.class);
+                        stackBuilder.addNextIntent(resultIntent);
+                        final PendingIntent resultPendingIntent =
+                                stackBuilder.getPendingIntent(
+                                        0,
+                                        PendingIntent.FLAG_UPDATE_CURRENT
+                                );
+                        //notifBuilder.setFullScreenIntent(resultPendingIntent, true);
+                        notifBuilder.setContentIntent( resultPendingIntent );
+                        final NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                        new Thread(
+                                new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        int incr = (int) (100 - (100 * distance) / m.getDistancia());
+                                        notifBuilder.setProgress(100, incr, false)
+                                                .setContentText("Distância de " + distance + " metros")
+                                                .setPriority(2);
+                                        notificationManager.notify(0, notifBuilder.build());
+                                        try {
+                                            Thread.sleep(5 * 1000);
+                                        } catch (InterruptedException e) {
+                                            Log.d("TAG", "sleep failure");
+                                        }
+                                    }
+                                }
+                        ).start();
+                        Log.i("Alarm", "gpsAlarm() level 2");
+                    }
+                }
+            }
+
+        }
+
     }
 
     LocationListener[] mLocationListeners = new LocationListener[] {
@@ -76,6 +149,7 @@ public class ServiceBackground extends Service {
     public int onStartCommand(Intent intent, int flags, int startId)
     {
         Log.e(TAG, "onStartCommand");
+
         super.onStartCommand(intent, flags, startId);
         return START_STICKY;
     }
@@ -103,6 +177,9 @@ public class ServiceBackground extends Service {
         } catch (IllegalArgumentException ex) {
             Log.d(TAG, "gps provider does not exist " + ex.getMessage());
         }
+
+        bdNew = new BDNew(this);
+        new LocationListener( bdNew.buscar() );
     }
 
     @Override
@@ -127,4 +204,6 @@ public class ServiceBackground extends Service {
             mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         }
     }
+
+
 }

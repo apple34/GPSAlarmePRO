@@ -12,6 +12,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -59,6 +60,8 @@ import com.oguzdev.circularfloatingactionmenu.library.FloatingActionMenu;
 import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -89,6 +92,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Map<Marker, Circle> mapMarkerCircle;
     private String mkci = null;
     final String[] s = new String[1];
+    private Intent intent;
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -103,7 +107,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         setUpMapIfNeeded();
-        startService(new Intent(this, ServiceBackground.class));
 
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id
                 .coordinatorLayout);
@@ -132,7 +135,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         clickMarker(geocoder);
         buildGoogleApiClient();
         floatingButton();
-        gpsAlarm();
+        //gpsAlarm();
 
         FloatingActionButton fb = (FloatingActionButton) findViewById(R.id.fab);
         fb.setBackgroundTintList(getResources().getColorStateList(R.color.blue));
@@ -153,6 +156,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         .center(new LatLng(m.getLatitude(), m.getLongitude())));
             }
         }
+
+        intent = new Intent(this, ServiceBackground.class);
+        startService(intent);
+
         Log.i(TAG, getClassName() + ".onCreate() chamado");
     }
 
@@ -496,7 +503,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 marcadores.toLong(ativo[0]);
                                 bdOld.inserir(marcadores);
                                 BDOldToBDNew(bdOld);
-                                gpsAlarm();
+                                //gpsAlarm();
                                 currentMarcadores.clear();
                                 currentMarcadores = bdNew.buscar();
                                 Log.i("SCRIPT", "busca BDOld-->" + bdOld.buscar());
