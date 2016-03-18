@@ -36,23 +36,17 @@ public class ServiceBackground extends Service {
     private LocationManager mLocationManager = null;
     private static final int LOCATION_INTERVAL = 100;
     private static final float LOCATION_DISTANCE = 0.1f;
-    public List<Marcadores> marcadores;
     private BDNew bdNew;
+    private BDOld bdOld;
 
     private class LocationListener implements android.location.LocationListener
     {
         Location mLastLocation;
-        List<Marcadores> marcadores;
 
         public LocationListener(String provider)
         {
             Log.e(TAG, "LocationListener " + provider);
             mLastLocation = new Location(provider);
-        }
-
-        public LocationListener( List<Marcadores> marcadores ){
-            Log.e(TAG, "LocationListener Marcadores" + marcadores.toString());
-            this.marcadores = marcadores;
         }
 
         @Override
@@ -83,17 +77,17 @@ public class ServiceBackground extends Service {
 
         private void gpsAlarm( Location location ){
             Log.i("Alarm", "gpsAlarm() level 1");
-            for (final Marcadores m : bdNew.buscar()) {
-                if (m != null && m.getAtivo() == 1) {
-                    final int distance = (int) SphericalUtil.computeDistanceBetween(
+            for( final Marcadores m : bdNew.buscar() ) {
+                if( m != null && m.getAtivo() == 1 ) {
+                    final long distance = (int) SphericalUtil.computeDistanceBetween(
                             new LatLng(location.getLatitude(), location.getLongitude())
                             , new LatLng(m.getLatitude(), m.getLongitude()));
-                    if (distance < m.getDistancia()) {
+                    if( distance < m.getDistancia() ) {
                         final NotificationCompat.Builder notifBuilder =
                                 (NotificationCompat.Builder) new NotificationCompat.Builder(getApplicationContext())
-                                        .setSmallIcon(R.drawable.alarmgps)
-                                        .setContentTitle(m.getEndereco())
-                                        .setVibrate(new long[]{500, 10000});
+                                        .setSmallIcon( R.drawable.alarmgps )
+                                        .setContentTitle( m.getEndereco() )
+                                        .setVibrate( new long[]{500, 10000} );
 
                         final Intent resultIntent = new Intent(getApplicationContext(), MapsActivity.class);
 
@@ -107,7 +101,22 @@ public class ServiceBackground extends Service {
                                 );
                         //notifBuilder.setFullScreenIntent(resultPendingIntent, true);
                         notifBuilder.setContentIntent( resultPendingIntent );
-                        final NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                        final NotificationManager notificationManager
+                                = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+                        final Intent intent1 = new Intent(getApplicationContext(), ServiceBackground.class);
+                        intent1.setAction("more");
+                        intent1.putExtra( "address", m.getEndereco() );
+                        intent1.putExtra("distance", distance);
+                        final PendingIntent pendingIntent1 = PendingIntent.getService(getApplicationContext(),
+                                1, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                        final Intent intent2 = new Intent(getApplicationContext(), ServiceBackground.class);
+                        intent2.setAction("deactivite");
+                        intent2.putExtra( "address", m.getEndereco() );
+                        final PendingIntent pendingIntent2 = PendingIntent.getService(getApplicationContext(),
+                                1, intent2, PendingIntent.FLAG_UPDATE_CURRENT);
+
                         new Thread(
                                 new Runnable() {
                                     @Override
@@ -115,8 +124,10 @@ public class ServiceBackground extends Service {
                                         int incr = (int) (100 - (100 * distance) / m.getDistancia());
                                         notifBuilder.setProgress(100, incr, false)
                                                 .setContentText("Distância de " + distance + " metros")
-                                                .setPriority(2);
-                                        notificationManager.notify(0, notifBuilder.build());
+                                                .setPriority(2)
+                                                .addAction( R.drawable.more_100_meters, "100 metros", pendingIntent1 )
+                                                .addAction( R.drawable.deactivite_alarm, "Desativar", pendingIntent2 );
+                                        notificationManager.notify( 0, notifBuilder.build() );
                                         try {
                                             Thread.sleep(5 * 1000);
                                         } catch (InterruptedException e) {
@@ -150,6 +161,35 @@ public class ServiceBackground extends Service {
     {
         Log.e(TAG, "onStartCommand");
 
+        switch ( intent.getAction() ){
+            case "more":
+                Log.e("TESTE PENDINGINTENT","more");
+                for( Marcadores marcadores : bdNew.buscar() ) {
+                    if ( marcadores.getEndereco().equals(intent.getExtras().get("address")) ) {
+                        marcadores.setDistancia( (Long) intent.getExtras().get("distance") - 100 );
+                        bdOld.atualizar( marcadores );
+                        bdNew.atualizar( marcadores );
+                        Log.i("SCRIPT", "busca BDOld-->" + bdOld.buscar());
+                        Log.i("SCRIPT", "busca BDNew-->" + bdNew.buscar());
+                    }
+                }
+                break;
+            case "deactivite":
+                Log.e("TESTE PENDINGINTENT","deactivite");
+                for( Marcadores marcadores : bdNew.buscar() ) {
+                    if ( marcadores.getEndereco().equals(intent.getExtras().get("address")) ) {
+                        marcadores.setAtivo(0);
+                        bdOld.atualizar( marcadores );
+                        bdNew.atualizar( marcadores );
+                        Log.i("SCRIPT", "busca BDOld-->" + bdOld.buscar());
+                        Log.i("SCRIPT", "busca BDNew-->" + bdNew.buscar());
+                    }
+                }
+                break;
+            case "null":
+                break;
+        }
+
         super.onStartCommand(intent, flags, startId);
         return START_STICKY;
     }
@@ -179,9 +219,8 @@ public class ServiceBackground extends Service {
         }
 
         bdNew = new BDNew(this);
-        new LocationListener( bdNew.buscar() );
+        bdOld = new BDOld(this);
     }
-
     @Override
     public void onDestroy()
     {

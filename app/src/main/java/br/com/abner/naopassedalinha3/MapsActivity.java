@@ -158,6 +158,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         intent = new Intent(this, ServiceBackground.class);
+        intent.setAction("null");
         startService(intent);
 
         Log.i(TAG, getClassName() + ".onCreate() chamado");
