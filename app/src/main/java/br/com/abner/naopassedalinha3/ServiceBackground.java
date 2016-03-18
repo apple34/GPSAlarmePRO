@@ -12,6 +12,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Vibrator;
 import android.support.annotation.Nullable;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.NotificationCompat;
@@ -38,6 +39,7 @@ public class ServiceBackground extends Service {
     private static final float LOCATION_DISTANCE = 0.1f;
     private BDNew bdNew;
     private BDOld bdOld;
+    private Vibrator vibrator;
 
     private class LocationListener implements android.location.LocationListener
     {
@@ -82,12 +84,11 @@ public class ServiceBackground extends Service {
                     final long distance = (int) SphericalUtil.computeDistanceBetween(
                             new LatLng(location.getLatitude(), location.getLongitude())
                             , new LatLng(m.getLatitude(), m.getLongitude()));
-                    if( distance < m.getDistancia() ) {
-                        final NotificationCompat.Builder notifBuilder =
+                    if( distance < m.getDistancia() ) {final NotificationCompat.Builder notifBuilder =
                                 (NotificationCompat.Builder) new NotificationCompat.Builder(getApplicationContext())
                                         .setSmallIcon( R.drawable.alarmgps )
-                                        .setContentTitle( m.getEndereco() )
-                                        .setVibrate( new long[]{500, 10000} );
+                                        .setVibrate( new long[]{500, 10000} )
+                                        .setContentTitle( m.getEndereco() );
 
                         final Intent resultIntent = new Intent(getApplicationContext(), MapsActivity.class);
 
@@ -126,13 +127,9 @@ public class ServiceBackground extends Service {
                                                 .setContentText("Distância de " + distance + " metros")
                                                 .setPriority(2)
                                                 .addAction( R.drawable.more_100_meters, "100 metros", pendingIntent1 )
-                                                .addAction( R.drawable.deactivite_alarm, "Desativar", pendingIntent2 );
+                                                .addAction(R.drawable.deactivite_alarm, "Desativar", pendingIntent2)
+                                                .setAutoCancel(true);
                                         notificationManager.notify( 0, notifBuilder.build() );
-                                        try {
-                                            Thread.sleep(5 * 1000);
-                                        } catch (InterruptedException e) {
-                                            Log.d("TAG", "sleep failure");
-                                        }
                                     }
                                 }
                         ).start();
@@ -161,33 +158,37 @@ public class ServiceBackground extends Service {
     {
         Log.e(TAG, "onStartCommand");
 
-        switch ( intent.getAction() ){
-            case "more":
-                Log.e("TESTE PENDINGINTENT","more");
-                for( Marcadores marcadores : bdNew.buscar() ) {
-                    if ( marcadores.getEndereco().equals(intent.getExtras().get("address")) ) {
-                        marcadores.setDistancia( (Long) intent.getExtras().get("distance") - 100 );
-                        bdOld.atualizar( marcadores );
-                        bdNew.atualizar( marcadores );
-                        Log.i("SCRIPT", "busca BDOld-->" + bdOld.buscar());
-                        Log.i("SCRIPT", "busca BDNew-->" + bdNew.buscar());
+        try {
+            switch ( intent.getAction() ){
+                case "more":
+                    Log.e("TESTE PENDINGINTENT","more");
+                    for( Marcadores marcadores : bdNew.buscar() ) {
+                        if ( marcadores.getEndereco().equals(intent.getExtras().get("address")) ) {
+                            marcadores.setDistancia( (Long) intent.getExtras().get("distance") - 100 );
+                            bdOld.atualizar( marcadores );
+                            bdNew.atualizar( marcadores );
+                            Log.i("SCRIPT", "busca BDOld-->" + bdOld.buscar());
+                            Log.i("SCRIPT", "busca BDNew-->" + bdNew.buscar());
+                        }
                     }
-                }
-                break;
-            case "deactivite":
-                Log.e("TESTE PENDINGINTENT","deactivite");
-                for( Marcadores marcadores : bdNew.buscar() ) {
-                    if ( marcadores.getEndereco().equals(intent.getExtras().get("address")) ) {
-                        marcadores.setAtivo(0);
-                        bdOld.atualizar( marcadores );
-                        bdNew.atualizar( marcadores );
-                        Log.i("SCRIPT", "busca BDOld-->" + bdOld.buscar());
-                        Log.i("SCRIPT", "busca BDNew-->" + bdNew.buscar());
+                    break;
+                case "deactivite":
+                    Log.e("TESTE PENDINGINTENT","deactivite");
+                    for( Marcadores marcadores : bdNew.buscar() ) {
+                        if ( marcadores.getEndereco().equals(intent.getExtras().get("address")) ) {
+                            marcadores.setAtivo(0);
+                            bdOld.atualizar( marcadores );
+                            bdNew.atualizar( marcadores );
+                            Log.i("SCRIPT", "busca BDOld-->" + bdOld.buscar());
+                            Log.i("SCRIPT", "busca BDNew-->" + bdNew.buscar());
+                        }
                     }
-                }
-                break;
-            case "null":
-                break;
+                    break;
+                case "null":
+                    break;
+            }
+        }catch ( Exception e ) {
+
         }
 
         super.onStartCommand(intent, flags, startId);
