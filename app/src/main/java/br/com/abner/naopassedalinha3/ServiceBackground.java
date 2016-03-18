@@ -10,6 +10,8 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Vibrator;
@@ -26,6 +28,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +42,6 @@ public class ServiceBackground extends Service {
     private static final float LOCATION_DISTANCE = 0.1f;
     private BDNew bdNew;
     private BDOld bdOld;
-    private Vibrator vibrator;
 
     private class LocationListener implements android.location.LocationListener
     {
@@ -51,12 +53,14 @@ public class ServiceBackground extends Service {
             mLastLocation = new Location(provider);
         }
 
+        public LocationListener(){}
+
         @Override
         public void onLocationChanged(Location location)
         {
             Log.e(TAG, "onLocationChanged: " + location);
             mLastLocation.set(location);
-            gpsAlarm( location );
+            gpsAlarm(location);
         }
 
         @Override
@@ -84,12 +88,13 @@ public class ServiceBackground extends Service {
                     final long distance = (int) SphericalUtil.computeDistanceBetween(
                             new LatLng(location.getLatitude(), location.getLongitude())
                             , new LatLng(m.getLatitude(), m.getLongitude()));
-                    if( distance < m.getDistancia() ) {final NotificationCompat.Builder notifBuilder =
+                    if( distance < m.getDistancia() ) {
+                        final NotificationCompat.Builder notifBuilder =
                                 (NotificationCompat.Builder) new NotificationCompat.Builder(getApplicationContext())
                                         .setSmallIcon( R.drawable.alarmgps )
-                                        .setVibrate( new long[]{500, 10000} )
-                                        .setContentTitle( m.getEndereco() );
-
+                                        .setVibrate( new long[]{ 500, 10000 } )
+                                        .setSound(RingtoneManager.getDefaultUri( RingtoneManager.TYPE_ALARM ))
+                                        .setContentTitle(m.getEndereco());
                         final Intent resultIntent = new Intent(getApplicationContext(), MapsActivity.class);
 
                         TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
@@ -158,10 +163,12 @@ public class ServiceBackground extends Service {
     {
         Log.e(TAG, "onStartCommand");
 
+        NotificationManager manager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         try {
             switch ( intent.getAction() ){
                 case "more":
-                    Log.e("TESTE PENDINGINTENT","more");
+                    Log.e("TESTE PENDINGINTENT", "more");
                     for( Marcadores marcadores : bdNew.buscar() ) {
                         if ( marcadores.getEndereco().equals(intent.getExtras().get("address")) ) {
                             marcadores.setDistancia( (Long) intent.getExtras().get("distance") - 100 );
@@ -177,8 +184,8 @@ public class ServiceBackground extends Service {
                     for( Marcadores marcadores : bdNew.buscar() ) {
                         if ( marcadores.getEndereco().equals(intent.getExtras().get("address")) ) {
                             marcadores.setAtivo(0);
-                            bdOld.atualizar( marcadores );
-                            bdNew.atualizar( marcadores );
+                            bdOld.atualizar(marcadores);
+                            bdNew.atualizar(marcadores);
                             Log.i("SCRIPT", "busca BDOld-->" + bdOld.buscar());
                             Log.i("SCRIPT", "busca BDNew-->" + bdNew.buscar());
                         }

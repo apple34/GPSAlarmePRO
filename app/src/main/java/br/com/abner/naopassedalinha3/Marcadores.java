@@ -58,6 +58,7 @@ public class Marcadores {
         this.ativo = ativo;
     }
     public void setDistancia(long distancia) {
+        if( distancia < 0 ) distancia = 0;
         this.distancia = distancia;
     }
 
