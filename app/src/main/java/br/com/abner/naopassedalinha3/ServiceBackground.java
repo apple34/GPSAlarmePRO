@@ -170,6 +170,8 @@ public class ServiceBackground extends Service {
                 case "more":
                     Log.e("TESTE PENDINGINTENT", "more");
                     for( Marcadores marcadores : bdNew.buscar() ) {
+                        Log.e("marcadores", marcadores.getEndereco() );
+                        Log.e("address", (String) intent.getExtras().get("address") );
                         if ( marcadores.getEndereco().equals(intent.getExtras().get("address")) ) {
                             marcadores.setDistancia( (Long) intent.getExtras().get("distance") - 100 );
                             bdOld.atualizar( marcadores );

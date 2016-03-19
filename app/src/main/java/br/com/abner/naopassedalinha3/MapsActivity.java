@@ -415,7 +415,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             endereco[0] = "" + addressMarker.get(0).getThoroughfare() + ", nº " + addressMarker.get(0)
                     .getSubThoroughfare();
         } catch (Exception e) {
-            endereco[0] = null;
+            endereco[0] = "null";
         }
 
         final int distanceInt;
@@ -432,15 +432,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     public void onClick(View v) {
                         builder.setIcon(R.drawable.map_marker);
 
-                        if (endereco[0] != null) {
+                        if (endereco[0] != "null") {
                             builder.setTitle(endereco[0] + distanceString);
                         } else {
                             builder.setTitle(latLng.latitude + ", " + latLng.longitude + distanceString);
                         }
 
                         final CharSequence[] alarme = new CharSequence[]{"Ativar alarme"};
-                        final boolean[] ativo = new boolean[alarme.length];
-                        builder.setMultiChoiceItems(alarme, ativo, new DialogInterface.OnMultiChoiceClickListener() {
+                        final boolean[] ativo = new boolean[ alarme.length ];
+                        builder.setMultiChoiceItems( alarme, ativo, new DialogInterface.OnMultiChoiceClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which, boolean isChecked) {
                                 ativo[which] = isChecked;
@@ -452,8 +452,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                         builder.setView(v);
 
-                        SeekBar sbBetVal = (SeekBar) v.findViewById(R.id.sbBetVal);
-                        final TextView tvBetVal = (TextView) v.findViewById(R.id.tvBetVal);
+                        SeekBar sbBetVal = ( SeekBar ) v.findViewById( R.id.sbBetVal );
+                        final TextView tvBetVal = ( TextView ) v.findViewById( R.id.tvBetVal );
                         sbBetVal.setMax(50);
                         sbBetVal.setProgress(1);
                         sbBetVal.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -606,198 +606,118 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             public boolean onMarkerClick(final Marker marker) {
                 final LatLng latLng = new LatLng(marker.getPosition().latitude, marker.getPosition().longitude);
                 int progress = 1;
-                String endereco = null;
+                final String[] endereco = new String[1];
 
                 for (Marcadores marcadores : bdNew.buscar()) {
                     if (marcadores.getLatitude().equals(latLng.latitude) &&
                             marcadores.getLongitude().equals(latLng.longitude) &&
                             marcadores.getAtivo() == 1) {
-                        endereco = marcadores.getEndereco();
-                        progress = (int) marcadores.getDistancia() / 100;
+                        endereco[0] = marcadores.getEndereco();
+                        progress = (int) marcadores.getDistancia();
                         ativo[0] = true;
                     } else if (marcadores.getLatitude().equals(latLng.latitude) &&
                             marcadores.getLongitude().equals(latLng.longitude) &&
                             marcadores.getAtivo() == 0) {
-                        endereco = marcadores.getEndereco();
-                        progress = (int) marcadores.getDistancia() / 100;
+                        endereco[0] = marcadores.getEndereco();
+                        progress = (int) marcadores.getDistancia();
                         ativo[0] = false;
                     }
                 }
 
                 try {
-                    addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
-                    final int finalProgress = progress;
-                    builder.setIcon(R.drawable.map_marker)
-                            .setTitle(endereco)
-                            .setPositiveButton(R.string.tools, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    builder2.setTitle("Editar");
-
-                                    builder2.setMultiChoiceItems(alarme, ativo, new DialogInterface.OnMultiChoiceClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                                            ativo[which] = isChecked;
-                                        }
-                                    });
-
-                                    LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
-                                    View v = inflater.inflate(R.layout.seekbar, null);
-
-                                    builder2.setView(v);
-
-                                    SeekBar sbBetVal = (SeekBar) v.findViewById(R.id.sbBetVal);
-                                    final TextView tvBetVal = (TextView) v.findViewById(R.id.tvBetVal);
-                                    sbBetVal.setMax(50);
-                                    sbBetVal.setProgress(finalProgress);
-                                    tvBetVal.setText(String.valueOf(100 * finalProgress) + " m");
-                                    sbBetVal.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
-                                        @Override
-                                        public void onStopTrackingTouch(SeekBar seekBar) {
-                                            // TODO Auto-generated method stub
-
-                                        }
-
-                                        @Override
-                                        public void onStartTrackingTouch(SeekBar seekBar) {
-                                            // TODO Auto-generated method stub
-
-                                        }
-
-                                        @Override
-                                        public void onProgressChanged(SeekBar seekBar, int progress,
-                                                                      boolean fromUser) {
-                                            // TODO Auto-generated method stub
-                                            distance = 100 * progress;
-                                            tvBetVal.setText(String.valueOf(100 * progress) + " m");
-                                        }
-                                    });
-
-                                    builder2.setPositiveButton(R.string.submit, new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            for (Marcadores marcadores : bdNew.buscar()) {
-                                                if (marcadores.getLatitude().equals(latLng.latitude) &&
-                                                        marcadores.getLongitude().equals(latLng.longitude)) {
-                                                    marcadores.toLong(ativo[0]);
-                                                    marcadores.setDistancia(distance);
-                                                    bdOld.atualizar(marcadores);
-                                                    bdNew.atualizar(marcadores);
-                                                    Log.i("SCRIPT", "busca BDOld-->" + bdOld.buscar());
-                                                    Log.i("SCRIPT", "busca BDNew-->" + bdNew.buscar());
-                                                }
-                                            }
-                                        }
-                                    }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-
-                                        }
-                                    }).setOnDismissListener(new DialogInterface.OnDismissListener() {
-                                        @Override
-                                        public void onDismiss(DialogInterface dialog) {
-                                        }
-                                    });
-                                    myDialog = builder2.create();
-                                    myDialog.show();
-                                }
-                            }).setNegativeButton(R.string.del, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            removeMarker(marker);
-                        }
-                    });
-                    myDialog = builder.create();
-                    myDialog.show();
+                    addressMarker = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
+                    endereco[0] = "" + addressMarker.get(0).getThoroughfare() + ", nº " + addressMarker.get(0)
+                            .getSubThoroughfare();
                 } catch (Exception e) {
-                    final int finalProgress1 = progress;
-                    builder.setIcon(R.drawable.map_marker)
-                            .setTitle(endereco)
-                            .setPositiveButton(R.string.tools, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    builder2.setTitle("Editar");
+                }
 
-                                    builder2.setMultiChoiceItems(alarme, ativo, new DialogInterface.OnMultiChoiceClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                                            ativo[which] = isChecked;
-                                        }
-                                    });
+                final int[] finalProgress = new int[1];
+                finalProgress[0] = progress;
+                builder.setIcon(R.drawable.map_marker)
+                        .setTitle(endereco[0])
+                        .setPositiveButton(R.string.tools, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                builder2.setTitle("Editar");
 
-                                    LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
-                                    View v = inflater.inflate(R.layout.seekbar, null);
+                                builder2.setMultiChoiceItems(alarme, ativo, new DialogInterface.OnMultiChoiceClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                                        ativo[which] = isChecked;
+                                    }
+                                });
 
-                                    builder2.setView(v);
+                                LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
+                                View v = inflater.inflate(R.layout.seekbar, null);
 
-                                    SeekBar sbBetVal = (SeekBar) v.findViewById(R.id.sbBetVal);
-                                    final TextView tvBetVal = (TextView) v.findViewById(R.id.tvBetVal);
-                                    sbBetVal.setMax(50);
-                                    sbBetVal.setProgress(finalProgress1);
+                                builder2.setView(v);
 
-                                    tvBetVal.setText(String.valueOf(100 * finalProgress1) + " m");
-                                    sbBetVal.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                                SeekBar sbBetVal = (SeekBar) v.findViewById(R.id.sbBetVal);
+                                final TextView tvBetVal = (TextView) v.findViewById(R.id.tvBetVal);
+                                sbBetVal.setMax(50);
+                                sbBetVal.setProgress( finalProgress[0] / 100 );
+                                tvBetVal.setText( String.valueOf( finalProgress[0] ) + " m" );
+                                sbBetVal.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                                    @Override
+                                    public void onStopTrackingTouch(SeekBar seekBar) {
+                                        // TODO Auto-generated method stub
 
-                                        @Override
-                                        public void onStopTrackingTouch(SeekBar seekBar) {
-                                            // TODO Auto-generated method stub
+                                    }
 
-                                        }
+                                    @Override
+                                    public void onStartTrackingTouch(SeekBar seekBar) {
+                                        // TODO Auto-generated method stub
 
-                                        @Override
-                                        public void onStartTrackingTouch(SeekBar seekBar) {
-                                            // TODO Auto-generated method stub
+                                    }
 
-                                        }
+                                    @Override
+                                    public void onProgressChanged(SeekBar seekBar, int progress,
+                                                                  boolean fromUser) {
+                                        // TODO Auto-generated method stub
+                                        Log.e("PROGRESS", String.valueOf(progress));
+                                        finalProgress[0] = 100 * progress;
+                                        Log.e("FINALPROGRESS", String.valueOf(finalProgress[0]));
+                                        tvBetVal.setText(String.valueOf(100 * progress) + " m");
+                                    }
+                                });
 
-                                        @Override
-                                        public void onProgressChanged(SeekBar seekBar, int progress,
-                                                                      boolean fromUser) {
-                                            // TODO Auto-generated method stub
-                                            distance = 100 * progress;
-                                            tvBetVal.setText(String.valueOf(100 * progress) + " m");
-                                        }
-                                    });
-
-                                    builder2.setPositiveButton(R.string.submit, new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            for (Marcadores marcadores : bdNew.buscar()) {
-                                                if (marcadores.getLatitude().equals(latLng.latitude) &&
-                                                        marcadores.getLongitude().equals(latLng.longitude)) {
-                                                    marcadores.toLong(ativo[0]);
-                                                    marcadores.setDistancia(distance);
-                                                    bdOld.atualizar(marcadores);
-                                                    bdNew.atualizar(marcadores);
-                                                    Log.i("SCRIPT", "busca BDOld-->" + bdOld.buscar());
-                                                    Log.i("SCRIPT", "busca BDNew-->" + bdNew.buscar());
-                                                }
+                                builder2.setPositiveButton(R.string.submit, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        for (Marcadores marcadores : bdNew.buscar()) {
+                                            if (marcadores.getLatitude().equals(latLng.latitude) &&
+                                                    marcadores.getLongitude().equals(latLng.longitude)) {
+                                                marcadores.toLong(ativo[0]);
+                                                marcadores.setDistancia( finalProgress[0] );
+                                                bdOld.atualizar(marcadores);
+                                                bdNew.atualizar(marcadores);
+                                                Log.i("SCRIPT", "busca BDOld-->" + bdOld.buscar());
+                                                Log.i("SCRIPT", "busca BDNew-->" + bdNew.buscar());
                                             }
                                         }
-                                    }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
+                                    }
+                                }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
 
-                                        }
-                                    }).setOnDismissListener(new DialogInterface.OnDismissListener() {
-                                        @Override
-                                        public void onDismiss(DialogInterface dialog) {
-                                        }
-                                    });
-                                    myDialog = builder2.create();
-                                    myDialog.show();
-                                }
-                            }).setNegativeButton(R.string.del, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            removeMarker(marker);
-                        }
-                    });
-                    myDialog = builder.create();
-                    myDialog.show();
-                }
-                return true;
+                                    }
+                                }).setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                    @Override
+                                    public void onDismiss(DialogInterface dialog) {
+                                    }
+                                });
+                                myDialog = builder2.create();
+                                myDialog.show();
+                            }
+                        }).setNegativeButton(R.string.del, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        removeMarker(marker);
+                    }
+                });
+                myDialog = builder.create();
+                myDialog.show();
+            return true;
             }
         });
 
