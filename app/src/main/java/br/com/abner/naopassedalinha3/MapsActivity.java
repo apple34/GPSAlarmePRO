@@ -17,6 +17,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.TaskStackBuilder;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.NotificationCompat;
 import android.support.v7.widget.SearchView;
 import android.media.AudioManager;
@@ -86,7 +87,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private int statusAudio;
     private SubActionButton bnt3;
     private List<Marcadores> currentMarcadores;
-    private Map<Marker, Circle> circles;
+    private List<Circulos> currentCirculos;
+    private Map<String, Circle> circles;
     private Circle circleMarker;
     private Marker markerCircle;
     private Map<Marker, Circle> mapMarkerCircle;
@@ -101,12 +103,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GoogleApiClient client;
     private CoordinatorLayout coordinatorLayout;
     protected static final String TAG = "LifeCycle";
+    private int permissionCheck;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         setUpMapIfNeeded();
+
+        permissionCheck = ContextCompat.checkSelfPermission( this,
+                Manifest.permission.ACCESS_FINE_LOCATION);
 
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id
                 .coordinatorLayout);
@@ -135,7 +141,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         clickMarker(geocoder);
         buildGoogleApiClient();
         floatingButton();
-        //gpsAlarm();
 
         FloatingActionButton fb = (FloatingActionButton) findViewById(R.id.fab);
         fb.setBackgroundTintList(getResources().getColorStateList(R.color.blue));
@@ -144,8 +149,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         fb2.setBackgroundTintList(getResources().getColorStateList(R.color.white));
 
         for (Marcadores m : bdNew.buscar()) {
-            if ( m!= null) {
-                markerCircle = mMap.addMarker(new MarkerOptions().position(new LatLng(m.getLatitude(), m.getLongitude()))
+            if ( m != null ) {
+                markerCircle = mMap.addMarker(new MarkerOptions().position(new LatLng( m.getLatitude(), m.getLongitude()))
                         .icon(BitmapDescriptorFactory.defaultMarker(215.f)));
                 circleMarker = mMap.addCircle(new CircleOptions()
                         .center(new LatLng(m.getLatitude(), m.getLongitude()))
@@ -154,6 +159,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         .strokeWidth(5)
                         .fillColor(0x442196F3)
                         .center(new LatLng(m.getLatitude(), m.getLongitude())));
+//                currentCirculos.add(new Circulos( circleMarker.getId(), circleMarker.getCenter().latitude,
+//                        circleMarker.getCenter().longitude));
             }
         }
 
@@ -162,6 +169,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         startService(intent);
 
         Log.i(TAG, getClassName() + ".onCreate() chamado");
+    }
+
+    public void addCircle( LatLng latLng, Marcadores m ){
     }
 
 
@@ -307,81 +317,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .attachTo(findViewById(R.id.fab2))
                 .build();
     }
-
-    private void gpsAlarm(){
-        Log.i("Alarm", "gpsAlarm() level 1");
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
-            @Override
-            public void onMyLocationChange(Location location) {
-                Log.i("Alarm", "gpsAlarm() level 2");
-                for (final Marcadores marcadores : bdNew.buscar()) {
-                    if (marcadores != null && marcadores.getAtivo() == 1) {
-                        final int distance = (int) SphericalUtil.computeDistanceBetween(
-                                new LatLng(location.getLatitude(), location.getLongitude())
-                                , new LatLng(marcadores.getLatitude(), marcadores.getLongitude()));
-                        if (distance < marcadores.getDistancia()) {
-//                            builder.setMessage("ALARME ATIVADO! " + marcadores.getEndereco())
-//                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//                                        @Override
-//                                        public void onClick(DialogInterface dialog, int which) {
-//                                            marcadores.setAtivo(0);
-//                                            bdNew.atualizar(marcadores);
-//                                            BDNewToBDOld(bdNew);
-//                                            Log.i("SCRIPT", "busca BDOld-->" + bdOld.buscar());
-//                                            Log.i("SCRIPT", "busca BDNew-->" + bdNew.buscar());
-//                                        }
-//                                    });
-//                            alertDialog = builder.create();
-//                            alertDialog.show();
-
-                            final NotificationCompat.Builder notifBuilder =
-                                    (NotificationCompat.Builder) new NotificationCompat.Builder(getApplicationContext())
-                                            .setSmallIcon(R.drawable.alarmgps)
-                                            .setContentTitle(marcadores.getEndereco())
-                                            .setVibrate(new long[]{500, 10000});
-
-                            final Intent resultIntent = new Intent(getApplicationContext(), MapsActivity.class);
-
-                            TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
-                            stackBuilder.addParentStack(MapsActivity.class);
-                            stackBuilder.addNextIntent(resultIntent);
-                            final PendingIntent resultPendingIntent =
-                                    stackBuilder.getPendingIntent(
-                                            0,
-                                            PendingIntent.FLAG_UPDATE_CURRENT
-                                    );
-                            //notifBuilder.setFullScreenIntent(resultPendingIntent, true);
-                            notifBuilder.setContentIntent(resultPendingIntent);
-                            final NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                            new Thread(
-                                    new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            int incr = (int) (100 - (100 * distance) / marcadores.getDistancia());
-                                            notifBuilder.setProgress(100, incr, false)
-                                                    .setContentText("Distância de " + distance + " metros")
-                                                    .setPriority(2);
-                                            notificationManager.notify(0, notifBuilder.build());
-                                            try {
-                                                Thread.sleep(5 * 1000);
-                                            } catch (InterruptedException e) {
-                                                Log.d("TAG", "sleep failure");
-                                            }
-                                        }
-                                    }
-                            ).start();
-                            Log.i("Alarm", "gpsAlarm() level 3");
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-
-
-
 //    public void lastAddrees() {
 //        BDNewCore bdNewCore = new BDNewCore(getApplicationContext());
 //        SQLiteDatabase sqLiteDatabase = bdNewCore.getWritableDatabase();
@@ -503,8 +438,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 marcadores.setLongitude(latLng.longitude);
                                 marcadores.toLong(ativo[0]);
                                 bdOld.inserir(marcadores);
-                                BDOldToBDNew(bdOld);
-                                //gpsAlarm();
+                                BDOldToBDNew(bdOld);;
                                 currentMarcadores.clear();
                                 currentMarcadores = bdNew.buscar();
                                 Log.i("SCRIPT", "busca BDOld-->" + bdOld.buscar());
@@ -580,6 +514,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void removeMarker(Marker rMarker) {
+        circleMarker.remove();
         rMarker.remove();
         double lat = rMarker.getPosition().latitude;
         double lng = rMarker.getPosition().longitude;
