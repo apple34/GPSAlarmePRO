@@ -39,28 +39,52 @@
 
     </FrameLayout>
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/fab1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
+        android:src="@drawable/button_plus" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginRight="86dp"
+        android:layout_marginBottom="16dp"
         android:src="@drawable/alarmgps" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|end"
-        android:layout_marginBottom="80dp"
-        android:layout_marginEnd="0dp"
-        android:layout_marginLeft="0dp"
-        android:layout_marginRight="0dp"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="0dp"
-        android:src="@drawable/button_plus"
-        app:layout_anchor="@id/fab"
-        app:layout_anchorGravity="top" />
+        android:id="@+id/minfab1"
+        android:layout_width="@dimen/fab_size_mini"
+        android:layout_height="@dimen/fab_size_mini"
+        android:layout_gravity="bottom|right"
+        android:layout_marginRight="24dp"
+        android:layout_marginBottom="86dp"
+        android:adjustViewBounds="true"
+        android:visibility="gone"
+        android:src="@drawable/alarmgps" />
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/minfab2"
+        android:layout_width="@dimen/fab_size_mini"
+        android:layout_height="@dimen/fab_size_mini"
+        android:layout_gravity="bottom|end"
+        android:layout_marginRight="24dp"
+        android:layout_marginBottom="142dp"
+        android:visibility="gone"
+        android:src="@drawable/alarmgps" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/minfab3"
+        android:layout_width="@dimen/fab_size_mini"
+        android:layout_height="@dimen/fab_size_mini"
+        android:layout_gravity="bottom|end"
+        android:layout_marginRight="24dp"
+        android:layout_marginBottom="198dp"
+        android:visibility="gone"
+        android:src="@drawable/alarmgps" />
 
 </android.support.design.widget.CoordinatorLayout>
 

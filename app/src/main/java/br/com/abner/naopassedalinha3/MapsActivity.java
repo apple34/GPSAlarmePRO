@@ -1,24 +1,15 @@
 package br.com.abner.naopassedalinha3;
 
 import android.Manifest;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.Service;
+import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.content.IntentFilter;
 import android.graphics.Color;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.Build;
-import android.os.IBinder;
-import android.os.Parcelable;
-import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.NotificationCompat;
 import android.support.v7.widget.SearchView;
 import android.media.AudioManager;
 import android.os.Vibrator;
@@ -49,6 +40,8 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -61,7 +54,6 @@ import com.oguzdev.circularfloatingactionmenu.library.FloatingActionMenu;
 import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -87,14 +79,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private int statusAudio;
     private SubActionButton bnt3;
     private List<Marcadores> currentMarcadores;
-    private List<Circulos> currentCirculos;
-    private Map<String, Circle> circles;
+    private List<Circle> circles;
     private Circle circleMarker;
     private Marker markerCircle;
     private Map<Marker, Circle> mapMarkerCircle;
     private String mkci = null;
     final String[] s = new String[1];
     private Intent intent;
+    private List<String> itemListViews;
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -104,6 +96,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private CoordinatorLayout coordinatorLayout;
     protected static final String TAG = "LifeCycle";
     private int permissionCheck;
+    private boolean menuIsOpen = false;
+    private ArrayList<String> stringArrayList = new ArrayList<>();
+    private ArrayAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,6 +125,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         bdOld = new BDOld(this);
         marcadores = new Marcadores();
         currentMarcadores = bdNew.buscar();
+        circles = new ArrayList();
+        adapter = new ArrayAdapter(getApplicationContext(), R.layout.item_list, stringArrayList);
 
         mMap.setOnMapLongClickListener(new OnMapLongClickListener() {
             @Override
@@ -140,27 +137,74 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         clickMarker(geocoder);
         buildGoogleApiClient();
-        floatingButton();
+        //floatingButton();
 
         FloatingActionButton fb = (FloatingActionButton) findViewById(R.id.fab);
         fb.setBackgroundTintList(getResources().getColorStateList(R.color.blue));
+        fb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
+                builder.setTitle(R.string.meu_marcadores)
+                        .setAdapter(adapter, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                for (Marcadores marcadores : bdNew.buscar()) {
+                                    if (marcadores != null) {
+                                        if (adapter.getItem(which).toString()
+                                                .equals(marcadores.getNome())) {
+                                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                                                    new LatLng(marcadores.getLatitude(),
+                                                            marcadores.getLongitude()), 15.0f));
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                myDialog = builder.create();
+                myDialog.show();
+            }
+        });
 
-        FloatingActionButton fb2 = (FloatingActionButton) findViewById(R.id.fab2);
-        fb2.setBackgroundTintList(getResources().getColorStateList(R.color.white));
+
+        final FloatingActionButton minfb1 = (FloatingActionButton) findViewById(R.id.minfab1);
+        minfb1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), "TESTE", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        final FloatingActionButton minfb2 = (FloatingActionButton) findViewById(R.id.minfab2);
+        final FloatingActionButton minfb3 = (FloatingActionButton) findViewById(R.id.minfab3);
+
+        final FloatingActionButton fb1 = (FloatingActionButton) findViewById(R.id.fab1);
+        fb1.setBackgroundTintList(getResources().getColorStateList(R.color.white));
+        fb1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (menuIsOpen) {
+                    fb1.animate().rotation(90);
+                    /*minfb1.setVisibility(View.GONE);
+                    minfb2.setVisibility(View.GONE);
+                    minfb3.setVisibility(View.GONE);*/
+                    menuIsOpen = false;
+                } else {
+                    fb1.animate().rotation(45);
+                    /*minfb1.setVisibility(View.VISIBLE);
+                    minfb2.setVisibility(View.VISIBLE);
+                    minfb3.setVisibility(View.VISIBLE);*/
+                    menuIsOpen = true;
+                }
+            }
+        });
 
         for (Marcadores m : bdNew.buscar()) {
             if ( m != null ) {
-                markerCircle = mMap.addMarker(new MarkerOptions().position(new LatLng( m.getLatitude(), m.getLongitude()))
+                markerCircle = mMap.addMarker(new MarkerOptions().position(new LatLng(m.getLatitude(), m.getLongitude()))
                         .icon(BitmapDescriptorFactory.defaultMarker(215.f)));
-                circleMarker = mMap.addCircle(new CircleOptions()
-                        .center(new LatLng(m.getLatitude(), m.getLongitude()))
-                        .radius(m.getDistancia())
-                        .strokeColor(0xFF2196F3)
-                        .strokeWidth(5)
-                        .fillColor(0x442196F3)
-                        .center(new LatLng(m.getLatitude(), m.getLongitude())));
-//                currentCirculos.add(new Circulos( circleMarker.getId(), circleMarker.getCenter().latitude,
-//                        circleMarker.getCenter().longitude));
+                addCircle(m);
+                stringArrayList.add(m.getNome());
             }
         }
 
@@ -171,15 +215,19 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         Log.i(TAG, getClassName() + ".onCreate() chamado");
     }
 
-    public void addCircle( LatLng latLng, Marcadores m ){
-    }
-
-
     @Override
     protected void onResume() {
         super.onResume();
         setUpMapIfNeeded();
         Log.i(TAG, getClassName() + ".onResume() chamado");
+        try {
+            LatLngBounds.Builder b = new LatLngBounds.Builder();
+            b.include(myLatLng);
+            LatLngBounds myLatLngBounds = b.build();
+            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(myLatLngBounds, 0));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLatLng, 15.0f));
+        }catch (Exception e){
+        }
     }
     @Override
     protected void onStart() {
@@ -314,7 +362,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .addSubActionView(bnt2)
                 .addSubActionView(bnt3)
                 .addSubActionView(bnt4)
-                .attachTo(findViewById(R.id.fab2))
+                .attachTo(findViewById(R.id.fab))
                 .build();
     }
 //    public void lastAddrees() {
@@ -374,8 +422,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         }
 
                         final CharSequence[] alarme = new CharSequence[]{"Ativar alarme"};
-                        final boolean[] ativo = new boolean[ alarme.length ];
-                        builder.setMultiChoiceItems( alarme, ativo, new DialogInterface.OnMultiChoiceClickListener() {
+                        final boolean[] ativo = new boolean[alarme.length];
+                        builder.setMultiChoiceItems(alarme, ativo, new DialogInterface.OnMultiChoiceClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which, boolean isChecked) {
                                 ativo[which] = isChecked;
@@ -387,8 +435,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                         builder.setView(v);
 
-                        SeekBar sbBetVal = ( SeekBar ) v.findViewById( R.id.sbBetVal );
-                        final TextView tvBetVal = ( TextView ) v.findViewById( R.id.tvBetVal );
+                        SeekBar sbBetVal = (SeekBar) v.findViewById(R.id.sbBetVal);
+                        final TextView tvBetVal = (TextView) v.findViewById(R.id.tvBetVal);
+                        final EditText etBetVal = (EditText) v.findViewById(R.id.etBetVal);
                         sbBetVal.setMax(50);
                         sbBetVal.setProgress(1);
                         sbBetVal.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -432,15 +481,22 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                         .strokeWidth(5)
                                         .fillColor(0x442196F3)
                                         .center(latLng));
-
+                                circles.add(circleMarker);
+                                if (!etBetVal.getText().toString().isEmpty()) {
+                                    marcadores.setNome(etBetVal.getText().toString());
+                                } else {
+                                    marcadores.setNome(""+addressMarker.get(0).getThoroughfare());
+                                }
                                 marcadores.setEndereco(endereco[0]);
                                 marcadores.setLatitude(latLng.latitude);
                                 marcadores.setLongitude(latLng.longitude);
                                 marcadores.toLong(ativo[0]);
                                 bdOld.inserir(marcadores);
-                                BDOldToBDNew(bdOld);;
+                                BDOldToBDNew(bdOld);
+                                ;
                                 currentMarcadores.clear();
                                 currentMarcadores = bdNew.buscar();
+                                stringArrayList.add(marcadores.getNome());
                                 Log.i("SCRIPT", "busca BDOld-->" + bdOld.buscar());
                                 Log.i("SCRIPT", "busca BDNew-->" + bdNew.buscar());
                             }
@@ -465,6 +521,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         View snackbarView = snackbar.getView();
         snackbarView.setBackgroundColor(Color.argb(255, 33, 150, 243));
         snackbar.show();
+    }
+
+    private void addCircle(Marcadores m){
+        circles.add(mMap.addCircle(new CircleOptions()
+                .center(new LatLng(m.getLatitude(), m.getLongitude()))
+                .radius(m.getDistancia())
+                .strokeColor(0xFF2196F3)
+                .strokeWidth(5)
+                .fillColor(0x442196F3)));
+
     }
 
     private void BDOldToBDNew(BDOld bdOld) {
@@ -513,8 +579,22 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    private void removeCircle(Marker rMarker){
+        Circle circle = null;
+        for(Circle c : circles){
+            if(c.getCenter().equals(new LatLng(rMarker.getPosition().latitude,
+                    rMarker.getPosition().longitude))){
+                circle = c;
+                c.remove();
+                break;
+            }
+        }
+        circles.remove(circle);
+        System.out.println("qtdCircles: " + circles.size());
+    }
+
     private void removeMarker(Marker rMarker) {
-        circleMarker.remove();
+        removeCircle(rMarker);
         rMarker.remove();
         double lat = rMarker.getPosition().latitude;
         double lng = rMarker.getPosition().longitude;
@@ -542,32 +622,42 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 final LatLng latLng = new LatLng(marker.getPosition().latitude, marker.getPosition().longitude);
                 int progress = 1;
                 final String[] endereco = new String[1];
+                Marcadores marcadores = new Marcadores();
 
-                for (Marcadores marcadores : bdNew.buscar()) {
-                    if (marcadores.getLatitude().equals(latLng.latitude) &&
-                            marcadores.getLongitude().equals(latLng.longitude) &&
-                            marcadores.getAtivo() == 1) {
-                        endereco[0] = marcadores.getEndereco();
-                        progress = (int) marcadores.getDistancia();
+                for (Marcadores m : bdNew.buscar()) {
+                    if (m.getLatitude().equals(latLng.latitude) &&
+                            m.getLongitude().equals(latLng.longitude) &&
+                            m.getAtivo() == 1) {
+                        endereco[0] = m.getEndereco();
+                        progress = (int) m.getDistancia();
                         ativo[0] = true;
-                    } else if (marcadores.getLatitude().equals(latLng.latitude) &&
-                            marcadores.getLongitude().equals(latLng.longitude) &&
-                            marcadores.getAtivo() == 0) {
-                        endereco[0] = marcadores.getEndereco();
-                        progress = (int) marcadores.getDistancia();
+                        marcadores = m;
+                    } else if (m.getLatitude().equals(latLng.latitude) &&
+                            m.getLongitude().equals(latLng.longitude) &&
+                            m.getAtivo() == 0) {
+                        endereco[0] = m.getEndereco();
+                        progress = (int) m.getDistancia();
                         ativo[0] = false;
+                        marcadores = m;
+                    }
+                }
+                if( endereco[0].equals("null") ){
+                    try {
+                        addressMarker = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
+                        endereco[0] = "" + addressMarker.get(0).getThoroughfare() + ", nº " + addressMarker.get(0)
+                                .getSubThoroughfare();
+                        marcadores.setEndereco(endereco[0]);
+                        bdNew.atualizar(marcadores);
+                        bdOld.atualizar(marcadores);
+                        Log.i("Banco atualizado","com o endereço "+endereco[0]);
+                    } catch (Exception e) {
                     }
                 }
 
-                try {
-                    addressMarker = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
-                    endereco[0] = "" + addressMarker.get(0).getThoroughfare() + ", nº " + addressMarker.get(0)
-                            .getSubThoroughfare();
-                } catch (Exception e) {
-                }
 
                 final int[] finalProgress = new int[1];
                 finalProgress[0] = progress;
+                final Marcadores finalMarcadores = marcadores;
                 builder.setIcon(R.drawable.map_marker)
                         .setTitle(endereco[0])
                         .setPositiveButton(R.string.tools, new DialogInterface.OnClickListener() {
@@ -589,6 +679,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                                 SeekBar sbBetVal = (SeekBar) v.findViewById(R.id.sbBetVal);
                                 final TextView tvBetVal = (TextView) v.findViewById(R.id.tvBetVal);
+                                final EditText etBetVal = (EditText) v.findViewById(R.id.etBetVal);
+                                etBetVal.setHint(""+finalMarcadores.getNome());
                                 sbBetVal.setMax(50);
                                 sbBetVal.setProgress( finalProgress[0] / 100 );
                                 tvBetVal.setText( String.valueOf( finalProgress[0] ) + " m" );
@@ -622,10 +714,18 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                         for (Marcadores marcadores : bdNew.buscar()) {
                                             if (marcadores.getLatitude().equals(latLng.latitude) &&
                                                     marcadores.getLongitude().equals(latLng.longitude)) {
+
+                                                if (!etBetVal.getText().toString().isEmpty()) {
+                                                    marcadores.setNome(etBetVal.getText().toString());
+                                                } else {
+                                                    marcadores.setNome(""+addressMarker.get(0).getThoroughfare());
+                                                }
                                                 marcadores.toLong(ativo[0]);
-                                                marcadores.setDistancia( finalProgress[0] );
+                                                marcadores.setDistancia(finalProgress[0]);
                                                 bdOld.atualizar(marcadores);
                                                 bdNew.atualizar(marcadores);
+                                                removeCircle(marker);
+                                                addCircle(marcadores);
                                                 Log.i("SCRIPT", "busca BDOld-->" + bdOld.buscar());
                                                 Log.i("SCRIPT", "busca BDNew-->" + bdNew.buscar());
                                             }
@@ -645,10 +745,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 myDialog.show();
                             }
                         }).setNegativeButton(R.string.del, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        removeMarker(marker);
-                    }
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                removeMarker(marker);
+                                for(int i = 0; i < stringArrayList.size(); i++){
+                                    if(stringArrayList.get(i).equals(finalMarcadores.getNome())){
+                                        stringArrayList.remove(i);
+                                        break;
+                                    }
+                                }
+                            }
                 });
                 myDialog = builder.create();
                 myDialog.show();
@@ -686,8 +792,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onConnected(Bundle bundle) {
         Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
-        Log.i("mLastLocation--->", "" + mLastLocation.getLatitude() + ", " + mLastLocation.getLongitude());
         if (mLastLocation != null) {
+            Log.i("mLastLocation--->", "" + mLastLocation.getLatitude() + ", " + mLastLocation.getLongitude());
             myLatLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
             try {
                 addresses = geocoder.getFromLocation(myLatLng.latitude, myLatLng.longitude, 1);

@@ -20,6 +20,7 @@ public class BDOldCore extends SQLiteOpenHelper{
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE OLdTable(" +
                 "_id integer primary key autoincrement," +
+                "nome,"+
                 "endereco text,"+
                 "latitude real," +
                 "longitude real," +

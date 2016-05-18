@@ -25,6 +25,7 @@ public class BDNew {
     public void inserir(Marcadores marcadores){
         ContentValues valores = new ContentValues();
         //valores.put("_id", marcadores.getId());
+        valores.put("nome", marcadores.getNome());
         valores.put("endereco", marcadores.getEndereco());
         valores.put("latitude", marcadores.getLatitude());
         valores.put("longitude", marcadores.getLongitude());
@@ -38,6 +39,7 @@ public class BDNew {
     public void atualizar(Marcadores marcadores){
         ContentValues valores = new ContentValues();
         valores.put("_id", marcadores.getId());
+        valores.put("nome", marcadores.getNome());
         valores.put("endereco", marcadores.getEndereco());
         valores.put("latitude", marcadores.getLatitude());
         valores.put("longitude", marcadores.getLongitude());
@@ -60,7 +62,7 @@ public class BDNew {
 
     public List<Marcadores> buscar(){
         List<Marcadores> list = new ArrayList<>();
-        String[] colunas = new String[]{"_id", "endereco", "latitude", "longitude", "ativo", "distancia"};
+        String[] colunas = new String[]{"_id", "nome", "endereco", "latitude", "longitude", "ativo", "distancia"};
 
         Cursor cursor = bd.query("NewTable", colunas, null, null, null, null, null);
                 if(cursor.getCount() > 0) {
@@ -69,11 +71,12 @@ public class BDNew {
 
                         Marcadores marcadores = new Marcadores();
                         marcadores.setId(cursor.getLong(0));
-                        marcadores.setEndereco(cursor.getString(1));
-                        marcadores.setLatitude(cursor.getDouble(2));
-                        marcadores.setLongitude(cursor.getDouble(3));
-                        marcadores.setAtivo(cursor.getLong(4));
-                        marcadores.setDistancia(cursor.getLong(5));
+                        marcadores.setNome(cursor.getString(1));
+                        marcadores.setEndereco(cursor.getString(2));
+                        marcadores.setLatitude(cursor.getDouble(3));
+                        marcadores.setLongitude(cursor.getDouble(4));
+                        marcadores.setAtivo(cursor.getLong(5));
+                        marcadores.setDistancia(cursor.getLong(6));
                         list.add(marcadores);
 
                     } while (cursor.moveToNext());

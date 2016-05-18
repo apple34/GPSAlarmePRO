@@ -36,7 +36,7 @@ import java.util.List;
  * Created by Abner on 26/02/2016.
  */
 public class ServiceBackground extends Service {
-    private static final String TAG = "BOOMBOOMTESTGPS";
+    private static final String TAG = "TESTGPS";
     private LocationManager mLocationManager = null;
     private static final int LOCATION_INTERVAL = 100;
     private static final float LOCATION_DISTANCE = 0.1f;

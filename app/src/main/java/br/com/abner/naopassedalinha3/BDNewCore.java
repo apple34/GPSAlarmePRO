@@ -19,6 +19,7 @@ public class BDNewCore extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase bd) {
         bd.execSQL("CREATE TABLE NewTable(" +
                 "_id integer primary key autoincrement," +
+                "nome text,"+
                 "endereco text,"+
                 "latitude real," +
                 "longitude real," +
