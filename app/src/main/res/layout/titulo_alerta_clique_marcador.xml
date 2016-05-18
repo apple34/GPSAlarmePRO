@@ -5,7 +5,7 @@
     android:layout_height="70sp"
     android:background="#2196F3">
     <TextView
-        android:text="Para implementar"
+        android:text="Opções"
         android:textColor="@android:color/white"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

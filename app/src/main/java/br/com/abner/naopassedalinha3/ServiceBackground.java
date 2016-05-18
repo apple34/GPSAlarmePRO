@@ -42,6 +42,8 @@ public class ServiceBackground extends Service {
     private static final float LOCATION_DISTANCE = 0.1f;
     private BDNew bdNew;
     private BDOld bdOld;
+    private NotificationCompat.Builder notifBuilder;
+    private NotificationManager notificationManager;
 
     private class LocationListener implements android.location.LocationListener
     {
@@ -89,8 +91,7 @@ public class ServiceBackground extends Service {
                             new LatLng(location.getLatitude(), location.getLongitude())
                             , new LatLng(m.getLatitude(), m.getLongitude()));
                     if( distance < m.getDistancia() ) {
-                        final NotificationCompat.Builder notifBuilder =
-                                (NotificationCompat.Builder) new NotificationCompat.Builder(getApplicationContext())
+                        notifBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(getApplicationContext())
                                         .setSmallIcon( R.drawable.alarmgps )
                                         .setVibrate( new long[]{ 500, 10000 } )
                                         .setSound(RingtoneManager.getDefaultUri( RingtoneManager.TYPE_ALARM ))
@@ -107,8 +108,6 @@ public class ServiceBackground extends Service {
                                 );
                         //notifBuilder.setFullScreenIntent(resultPendingIntent, true);
                         notifBuilder.setContentIntent( resultPendingIntent );
-                        final NotificationManager notificationManager
-                                = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
                         final Intent intent1 = new Intent(getApplicationContext(), ServiceBackground.class);
                         intent1.setAction("more");
@@ -119,7 +118,8 @@ public class ServiceBackground extends Service {
 
                         final Intent intent2 = new Intent(getApplicationContext(), ServiceBackground.class);
                         intent2.setAction("deactivite");
-                        intent2.putExtra( "address", m.getEndereco() );
+                        intent2.putExtra("address", m.getEndereco());
+                        intent2.putExtra( "isMore", 1);
                         final PendingIntent pendingIntent2 = PendingIntent.getService(getApplicationContext(),
                                 1, intent2, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -131,10 +131,10 @@ public class ServiceBackground extends Service {
                                         notifBuilder.setProgress(100, incr, false)
                                                 .setContentText("Distância de " + distance + " metros")
                                                 .setPriority(2)
-                                                .addAction( R.drawable.more_100_meters, "100 metros", pendingIntent1 )
+                                                .addAction(R.drawable.more_100_meters, "100 metros", pendingIntent1)
                                                 .addAction(R.drawable.deactivite_alarm, "Desativar", pendingIntent2)
                                                 .setAutoCancel(true);
-                                        notificationManager.notify( 0, notifBuilder.build() );
+                                        notificationManager.notify(0, notifBuilder.build());
                                     }
                                 }
                         ).start();
@@ -162,9 +162,6 @@ public class ServiceBackground extends Service {
     public int onStartCommand(Intent intent, int flags, int startId)
     {
         Log.e(TAG, "onStartCommand");
-
-        NotificationManager manager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         try {
             switch ( intent.getAction() ){
                 case "more":
@@ -174,6 +171,7 @@ public class ServiceBackground extends Service {
                         Log.e("address", (String) intent.getExtras().get("address") );
                         if ( marcadores.getEndereco().equals(intent.getExtras().get("address")) ) {
                             marcadores.setDistancia( (Long) intent.getExtras().get("distance") - 100 );
+                            notificationManager.cancel(0);
                             bdOld.atualizar( marcadores );
                             bdNew.atualizar( marcadores );
                             Log.i("SCRIPT", "busca BDOld-->" + bdOld.buscar());
@@ -186,6 +184,7 @@ public class ServiceBackground extends Service {
                     for( Marcadores marcadores : bdNew.buscar() ) {
                         if ( marcadores.getEndereco().equals(intent.getExtras().get("address")) ) {
                             marcadores.setAtivo(0);
+                            notificationManager.cancel(0);
                             bdOld.atualizar(marcadores);
                             bdNew.atualizar(marcadores);
                             Log.i("SCRIPT", "busca BDOld-->" + bdOld.buscar());
@@ -208,6 +207,9 @@ public class ServiceBackground extends Service {
     public void onCreate()
     {
         Log.e(TAG, "onCreate");
+        notificationManager
+                = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
         initializeLocationManager();
         try {
             mLocationManager.requestLocationUpdates(
