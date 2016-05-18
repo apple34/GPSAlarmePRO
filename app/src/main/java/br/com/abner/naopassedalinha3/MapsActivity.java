@@ -1,15 +1,10 @@
 package br.com.abner.naopassedalinha3;
 
-import android.Manifest;
-import android.app.Dialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Color;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.SearchView;
 import android.media.AudioManager;
 import android.os.Vibrator;
@@ -40,7 +35,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.SeekBar;
@@ -56,7 +50,6 @@ import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks
         , GoogleApiClient.OnConnectionFailedListener{
@@ -81,33 +74,24 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private List<Marcadores> currentMarcadores;
     private List<Circle> circles;
     private Circle circleMarker;
-    private Marker markerCircle;
-    private Map<Marker, Circle> mapMarkerCircle;
-    private String mkci = null;
-    final String[] s = new String[1];
     private Intent intent;
-    private List<String> itemListViews;
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
-    private GoogleApiClient client;
     private CoordinatorLayout coordinatorLayout;
     protected static final String TAG = "LifeCycle";
-    private int permissionCheck;
     private boolean menuIsOpen = false;
-    private ArrayList<String> stringArrayList = new ArrayList<>();
-    private ArrayAdapter adapter;
+    private List<String> textoNomes = new ArrayList<>();
+    private List<String> textoEnderecos = new ArrayList<>();
+    private MyAdapter myAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         setUpMapIfNeeded();
-
-        permissionCheck = ContextCompat.checkSelfPermission( this,
-                Manifest.permission.ACCESS_FINE_LOCATION);
 
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id
                 .coordinatorLayout);
@@ -126,7 +110,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         marcadores = new Marcadores();
         currentMarcadores = bdNew.buscar();
         circles = new ArrayList();
-        adapter = new ArrayAdapter(getApplicationContext(), R.layout.item_list, stringArrayList);
 
         mMap.setOnMapLongClickListener(new OnMapLongClickListener() {
             @Override
@@ -137,7 +120,19 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         clickMarker(geocoder);
         buildGoogleApiClient();
-        //floatingButton();
+
+        for (Marcadores m : bdNew.buscar()) {
+            if ( m != null ) {
+                mMap.addMarker(new MarkerOptions().position(new LatLng(m.getLatitude(), m.getLongitude()))
+                        .icon(BitmapDescriptorFactory.defaultMarker(215.f)));
+                addCircle(m);
+                textoNomes.add(m.getNome());
+                textoEnderecos.add(m.getEndereco());
+            }
+        }
+
+        myAdapter = new MyAdapter(MapsActivity.this, textoNomes, textoEnderecos);
+        myAdapter.notifyDataSetChanged();
 
         FloatingActionButton fb = (FloatingActionButton) findViewById(R.id.fab);
         fb.setBackgroundTintList(getResources().getColorStateList(R.color.blue));
@@ -145,14 +140,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View v) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
-                builder.setTitle(R.string.meu_marcadores)
-                        .setAdapter(adapter, new DialogInterface.OnClickListener() {
+                LayoutInflater layoutInflater = getLayoutInflater();
+                View view = layoutInflater.inflate(R.layout.titulo_alerta_lista_de_marcadores, null);
+                builder.setCustomTitle(view)
+                        .setAdapter(myAdapter, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 for (Marcadores marcadores : bdNew.buscar()) {
                                     if (marcadores != null) {
-                                        if (adapter.getItem(which).toString()
-                                                .equals(marcadores.getNome())) {
+                                        if (myAdapter.getItem(which).toString()
+                                                .equals(marcadores.getEndereco())) {
                                             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
                                                     new LatLng(marcadores.getLatitude(),
                                                             marcadores.getLongitude()), 15.0f));
@@ -199,14 +196,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
 
-        for (Marcadores m : bdNew.buscar()) {
-            if ( m != null ) {
-                markerCircle = mMap.addMarker(new MarkerOptions().position(new LatLng(m.getLatitude(), m.getLongitude()))
-                        .icon(BitmapDescriptorFactory.defaultMarker(215.f)));
-                addCircle(m);
-                stringArrayList.add(m.getNome());
-            }
-        }
+
 
         intent = new Intent(this, ServiceBackground.class);
         intent.setAction("null");
@@ -472,7 +462,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         }).setPositiveButton(R.string.add, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                markerCircle = mMap.addMarker(new MarkerOptions().position(latLng)
+                                mMap.addMarker(new MarkerOptions().position(latLng)
                                         .icon(BitmapDescriptorFactory.defaultMarker(215.f)));
                                 circleMarker = mMap.addCircle(new CircleOptions()
                                         .center(latLng)
@@ -485,7 +475,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 if (!etBetVal.getText().toString().isEmpty()) {
                                     marcadores.setNome(etBetVal.getText().toString());
                                 } else {
-                                    marcadores.setNome(""+addressMarker.get(0).getThoroughfare());
+                                    marcadores.setNome(marcadores.getNome());
                                 }
                                 marcadores.setEndereco(endereco[0]);
                                 marcadores.setLatitude(latLng.latitude);
@@ -496,7 +486,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 ;
                                 currentMarcadores.clear();
                                 currentMarcadores = bdNew.buscar();
-                                stringArrayList.add(marcadores.getNome());
+                                textoNomes.add(marcadores.getNome());
+                                textoEnderecos.add(marcadores.getEndereco());
                                 Log.i("SCRIPT", "busca BDOld-->" + bdOld.buscar());
                                 Log.i("SCRIPT", "busca BDNew-->" + bdNew.buscar());
                             }
@@ -658,19 +649,22 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 final int[] finalProgress = new int[1];
                 finalProgress[0] = progress;
                 final Marcadores finalMarcadores = marcadores;
-                builder.setIcon(R.drawable.map_marker)
-                        .setTitle(endereco[0])
+                LayoutInflater layoutInflater = getLayoutInflater();
+                View view = layoutInflater.inflate(R.layout.titulo_alerta_clique_marcador, null);
+                builder.setMessage(endereco[0])
+                        .setCustomTitle(view)
                         .setPositiveButton(R.string.tools, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                builder2.setTitle("Editar");
-
-                                builder2.setMultiChoiceItems(alarme, ativo, new DialogInterface.OnMultiChoiceClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                                        ativo[which] = isChecked;
-                                    }
-                                });
+                                LayoutInflater layoutInflater = getLayoutInflater();
+                                View view = layoutInflater.inflate(R.layout.titulo_alerta_editar_marcador, null);
+                                builder2.setCustomTitle(view)
+                                        .setMultiChoiceItems(alarme, ativo, new DialogInterface.OnMultiChoiceClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                                                ativo[which] = isChecked;
+                                            }
+                                        });
 
                                 LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
                                 View v = inflater.inflate(R.layout.seekbar, null);
@@ -680,10 +674,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 SeekBar sbBetVal = (SeekBar) v.findViewById(R.id.sbBetVal);
                                 final TextView tvBetVal = (TextView) v.findViewById(R.id.tvBetVal);
                                 final EditText etBetVal = (EditText) v.findViewById(R.id.etBetVal);
-                                etBetVal.setHint(""+finalMarcadores.getNome());
+                                etBetVal.setHint("" + finalMarcadores.getNome());
                                 sbBetVal.setMax(50);
-                                sbBetVal.setProgress( finalProgress[0] / 100 );
-                                tvBetVal.setText( String.valueOf( finalProgress[0] ) + " m" );
+                                sbBetVal.setProgress(finalProgress[0] / 100);
+                                tvBetVal.setText(String.valueOf(finalProgress[0]) + " m");
                                 sbBetVal.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                                     @Override
                                     public void onStopTrackingTouch(SeekBar seekBar) {
@@ -717,8 +711,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                                                 if (!etBetVal.getText().toString().isEmpty()) {
                                                     marcadores.setNome(etBetVal.getText().toString());
-                                                } else {
-                                                    marcadores.setNome(""+addressMarker.get(0).getThoroughfare());
                                                 }
                                                 marcadores.toLong(ativo[0]);
                                                 marcadores.setDistancia(finalProgress[0]);
@@ -748,9 +740,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 removeMarker(marker);
-                                for(int i = 0; i < stringArrayList.size(); i++){
-                                    if(stringArrayList.get(i).equals(finalMarcadores.getNome())){
-                                        stringArrayList.remove(i);
+                                for(int i = 0; i < textoNomes.size(); i++){
+                                    if(textoEnderecos.get(i).equals(finalMarcadores.getEndereco())){
+                                        textoNomes.remove(i);
+                                        textoEnderecos.remove(i);
                                         break;
                                     }
                                 }

@@ -14,5 +14,6 @@
     <string name="about">Produzido por <b>Abner Escócio</b>, abner.escocio@gmail.com. Este aplicativo é ideal para pessoas que gostam de cochilar no ônibus ou no metrô, e não querem de forma alguma passar da linha de destino. Também pode auxiliar aqueles que gostam de ler textos durante a viajem, dando mais tranquilidade e foco para a leitura. Estamos muito gratos por optar pelo <b>Não Passe Da Linha</b>, avalie-nos!
     </string>
     <string name="wait">Aguarde...</string>
-    <string name="meu_marcadores">Meus marcadores</string>
+    <string name="meus_marcadores">Meus marcadores</string>
+    <string name="editar">Editar</string>
 </resources>
