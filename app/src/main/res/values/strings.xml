@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Nao Passe Da Linha</string>
+    <string name="app_name">GPS Alarme PRO</string>
     <string name="version">versão 1.0</string>
     <string name="title_activity_maps"><font fgcolor="#ffffffff">GPS Alarme PRO</font></string>
     <string name="raio">Raio de alarme</string>

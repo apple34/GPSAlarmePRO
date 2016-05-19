@@ -147,6 +147,29 @@ public class ServiceBackground extends Service {
 
     }
 
+    private void BDOldToBDNew(BDOld bdOld) {
+        bdNew.deletarAllLines();
+        for (Marcadores m : bdOld.buscar()) {
+            bdNew.inserir(m);
+        }
+    }
+
+    private void BDOldToBDNewDel(BDOld bdOld, double lat, double lng) {
+        bdNew.deletarAllLines();
+        for (Marcadores m : bdOld.buscar()) {
+            if (m.getLatitude() != lat && m.getLongitude() != lng) {
+                bdNew.inserir(m);
+            }
+        }
+    }
+
+    private void BDNewToBDOld(BDNew bdNew) {
+        bdOld.deletarAllLines();
+        for (Marcadores m : bdNew.buscar()) {
+            bdOld.inserir(m);
+        }
+    }
+
     LocationListener[] mLocationListeners = new LocationListener[] {
             new LocationListener(LocationManager.GPS_PROVIDER),
             new LocationListener(LocationManager.NETWORK_PROVIDER)
@@ -170,10 +193,11 @@ public class ServiceBackground extends Service {
                         Log.e("marcadores", marcadores.getEndereco() );
                         Log.e("address", (String) intent.getExtras().get("address") );
                         if ( marcadores.getEndereco().equals(intent.getExtras().get("address")) ) {
-                            marcadores.setDistancia( (Long) intent.getExtras().get("distance") - 100 );
+                            marcadores.setDistancia((Long) intent.getExtras().get("distance") - 100);
                             notificationManager.cancel(0);
-                            bdOld.atualizar( marcadores );
+                            //bdOld.atualizar( marcadores );
                             bdNew.atualizar( marcadores );
+                            BDNewToBDOld(bdNew);
                             Log.i("SCRIPT", "busca BDOld-->" + bdOld.buscar());
                             Log.i("SCRIPT", "busca BDNew-->" + bdNew.buscar());
                         }
@@ -185,8 +209,9 @@ public class ServiceBackground extends Service {
                         if ( marcadores.getEndereco().equals(intent.getExtras().get("address")) ) {
                             marcadores.setAtivo(0);
                             notificationManager.cancel(0);
-                            bdOld.atualizar(marcadores);
+                            //bdOld.atualizar(marcadores);
                             bdNew.atualizar(marcadores);
+                            BDNewToBDOld(bdNew);
                             Log.i("SCRIPT", "busca BDOld-->" + bdOld.buscar());
                             Log.i("SCRIPT", "busca BDNew-->" + bdNew.buscar());
                         }
