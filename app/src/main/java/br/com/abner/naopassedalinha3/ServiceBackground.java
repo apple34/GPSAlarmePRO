@@ -95,7 +95,7 @@ public class ServiceBackground extends Service {
                                         .setSmallIcon( R.drawable.alarmgps )
                                         .setVibrate( new long[]{ 500, 10000 } )
                                         .setSound(RingtoneManager.getDefaultUri( RingtoneManager.TYPE_ALARM ))
-                                        .setContentTitle(m.getEndereco());
+                                        .setContentTitle(m.getNome()+" - "+m.getEndereco());
                         final Intent resultIntent = new Intent(getApplicationContext(), MapsActivity.class);
 
                         TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
@@ -131,6 +131,7 @@ public class ServiceBackground extends Service {
                                         notifBuilder.setProgress(100, incr, false)
                                                 .setContentText("Distância de " + distance + " metros")
                                                 .setPriority(2)
+                                                .setColor(getApplicationContext().getResources().getColor(R.color.colorAccent))
                                                 .addAction(R.drawable.more_100_meters, "100 metros", pendingIntent1)
                                                 .addAction(R.drawable.deactivite_alarm, "Desativar", pendingIntent2)
                                                 .setAutoCancel(true);

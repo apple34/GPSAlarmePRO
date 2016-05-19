@@ -121,15 +121,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 add(latLng);
             }
         });
-
         clickMarker(geocoder);
         buildGoogleApiClient();
 
         for (Marcadores m : bdNew.buscar()) {
             if ( m != null ) {
-                mMap.addMarker(new MarkerOptions().position(new LatLng(m.getLatitude(), m.getLongitude()))
+                Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng(m.getLatitude(), m.getLongitude()))
                         .icon(BitmapDescriptorFactory.defaultMarker(215.f))
                         .title(m.getNome()));
+                //marker.showInfoWindow();
                 addCircle(m);
                 textoNomes.add(m.getNome());
                 textoEnderecos.add(m.getEndereco());
@@ -187,7 +187,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         minfb2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                add(myLatLng);
+                try{
+                    add(myLatLng);
+                }catch (Exception e){
+
+                }
             }
         });
         minfb3 = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.minfab3);
@@ -223,34 +227,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
 
-        final FloatingActionsMenu fb1 = (FloatingActionsMenu) findViewById(R.id.menuFloat);
-        fb1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (menuIsOpen) {
-                    fb1.animate().rotation(90);
-                    minfb1.setAlpha(0.0f);
-                    minfb1.setVisibility(View.GONE);
-                    minfb2.setVisibility(View.GONE);
-                    minfb3.setVisibility(View.GONE);
-                    menuIsOpen = false;
-                } else {
-                    fb1.animate().rotation(45);
-                    minfb1.setVisibility(View.VISIBLE);
-                    minfb2.setVisibility(View.VISIBLE);
-                    minfb3.setVisibility(View.VISIBLE);
-                    menuIsOpen = true;
-                }
-            }
-        });
-
-
-
         intent = new Intent(this, ServiceBackground.class);
         intent.setAction("null");
         startService(intent);
 
         Log.i(TAG, getClassName() + ".onCreate() chamado");
+        System.out.println("isMyLocationEnabled: "+mMap.isMyLocationEnabled());
     }
 
     @Override
@@ -410,6 +392,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             public void onClick(DialogInterface dialog, int which) {
                                 mMap.addMarker(new MarkerOptions().position(latLng)
                                         .icon(BitmapDescriptorFactory.defaultMarker(215.f)));
+                                if(distanceProgress[0] == 0){
+                                    distanceProgress[0] = 500;
+                                }
                                 circleMarker = mMap.addCircle(new CircleOptions()
                                         .center(latLng)
                                         .radius(distanceProgress[0])
@@ -749,8 +734,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onConnected(Bundle bundle) {
         Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
+        Log.i("mLastLocation--->", "" + mLastLocation.getLatitude() + ", " + mLastLocation.getLongitude());
         if (mLastLocation != null) {
-            Log.i("mLastLocation--->", "" + mLastLocation.getLatitude() + ", " + mLastLocation.getLongitude());
             myLatLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
             try {
                 addresses = geocoder.getFromLocation(myLatLng.latitude, myLatLng.longitude, 1);
@@ -803,6 +788,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         getMenuInflater().inflate(R.menu.search, menu);
 
         MenuItem searchItem = menu.findItem(R.id.action_search);
+        searchItem.setIcon(R.mipmap.search);
         SearchView sv = (SearchView) MenuItemCompat.getActionView(searchItem);
         sv.setOnQueryTextListener(new SearchFiltro());
 
