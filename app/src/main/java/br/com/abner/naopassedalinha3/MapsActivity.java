@@ -651,7 +651,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                                 bdNew.atualizar(marcadores);
                                                 BDNewToBDOld(bdNew);
                                                 for(int i = 0; i < textoNomes.size(); i++){
-                                                    if(textoLatLng.get(i).equals(marcadores.getLatitude()+", "
+                                                    if(textoLatLng.get(i).contains(marcadores.getLatitude()+", "
                                                             +marcadores.getLongitude())){
                                                         textoNomes.remove(i);
                                                         textoNomes.add(etBetVal.getText().toString());
