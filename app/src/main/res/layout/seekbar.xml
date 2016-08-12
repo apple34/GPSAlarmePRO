@@ -3,22 +3,61 @@
     android:id="@+id/betvalue"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:padding="10dp" >
-
-    <TextView
-        android:id="@+id/tvBetVal"
-        android:layout_width="wrap_content"
+    android:paddingTop="10sp"
+    android:paddingLeft="30sp"
+    android:paddingRight="30sp"
+    android:paddingBottom="30sp">
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:textColor="@android:color/black"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tvBetVal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:textColor="@color/textColorPrimary"
+                android:hint="Raio de alarme"
+                android:textColorHint="@color/textColorPrimary"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <SeekBar
+                android:id="@+id/sbBetVal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:padding="7sp"
+                android:progressBackgroundTint="@color/wallet_secondary_text_holo_dark"
+                android:layout_centerHorizontal="true" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <EditText
+                android:id="@+id/etBetVal"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginLeft="20sp"
+                android:layout_marginRight="20sp"
+                android:textColor="@android:color/black"
+                android:hint="Nome do marcador"
+                android:textColorHint="@color/wallet_secondary_text_holo_dark"/>
+        </LinearLayout>
+    </LinearLayout>
 
-    <SeekBar
-        android:id="@+id/sbBetVal"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tvBetVal"
-        android:layout_centerHorizontal="true" />
+
+
+
+
+
 
 </RelativeLayout>

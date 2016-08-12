@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Nao Passe Da Linha</string>
+    <string name="app_name">GPS Alarme PRO</string>
     <string name="version">versão 1.0</string>
     <string name="title_activity_maps"><font fgcolor="#ffffffff">GPS Alarme PRO</font></string>
     <string name="raio">Raio de alarme</string>
@@ -11,6 +11,9 @@
     <string name="del">EXCLUIR</string>
     <string name="next">AVANÇAR</string>
     <string name="local_not_found">Lugar não encontrado, verifique sua conexão com a internet</string>
-    <string name="about">Produzido por <b>Abner Escócio</b>, abner.escocio@gmail.com. Este aplicativo é ideal para pessoas que gostam de cochilar no ônibus ou no metrô, e não querem de forma alguma passar da linha de destino. Também pode auxiliar aqueles que gostam de ler textos durante a viajem, dando mais tranquilidade e foco para a leitura. Estamos muito gratos por optar pelo <b>Não Passe Da Linha</b>, avalie-nos!
+    <string name="about">Produzido por <b>Abner Escócio</b>, abner.escocio@gmail.com. Este aplicativo é ideal para pessoas que gostam de cochilar no ônibus ou no metrô, e não querem de forma alguma passar da linha de destino. Também pode auxiliar aqueles que gostam de ler textos durante a viajem, dando mais tranquilidade e foco para a leitura. Estamos muito gratos por optar pelo <b>GPS Alarme PRO</b>, avalie-nos!
     </string>
+    <string name="wait">Aguarde...</string>
+    <string name="meus_marcadores">Meus marcadores</string>
+    <string name="editar">Editar</string>
 </resources>

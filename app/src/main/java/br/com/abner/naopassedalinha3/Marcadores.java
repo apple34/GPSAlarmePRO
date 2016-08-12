@@ -17,6 +17,7 @@ public class Marcadores {
     public Marcadores(){}
 
     private long id;
+    private String nome;
     private String endereco;
     private Double latitude;
     private Double longitude;
@@ -25,6 +26,9 @@ public class Marcadores {
 
     public long getId() {
         return id;
+    }
+    public String getNome() {
+        return nome;
     }
     public String getEndereco() {
         return endereco;
@@ -44,6 +48,9 @@ public class Marcadores {
 
     public void setId(long id) {
         this.id = id;
+    }
+    public void setNome(String nome) {
+        this.nome = nome;
     }
     public void setEndereco(String endereco) {
         this.endereco = endereco;
@@ -72,6 +79,6 @@ public class Marcadores {
 
     @Override
     public String toString() {
-        return "{"+id+": "+endereco+", "+latitude+", "+longitude+", "+ ativo +", "+distancia+" metros}";
+        return "{"+id+": "+nome+", "+endereco+", "+latitude+", "+longitude+", "+ ativo +", "+distancia+" metros}";
     }
 }

@@ -10,7 +10,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class BDOldCore extends SQLiteOpenHelper{
     private static final String NOME_BDOld = "OldTable";
-    private static final int VERSAO_BDOld = 1;
+    private static final int VERSAO_BDOld = 2;
 
     public BDOldCore(Context context) {
         super(context, NOME_BDOld, null, VERSAO_BDOld);
@@ -20,6 +20,7 @@ public class BDOldCore extends SQLiteOpenHelper{
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE OLdTable(" +
                 "_id integer primary key autoincrement," +
+                "nome,"+
                 "endereco text,"+
                 "latitude real," +
                 "longitude real," +
