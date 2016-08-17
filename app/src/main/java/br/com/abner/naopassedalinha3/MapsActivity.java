@@ -1,10 +1,17 @@
 package br.com.abner.naopassedalinha3;
 
+import android.annotation.TargetApi;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Typeface;
+import android.os.Build;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.SearchView;
 import android.media.AudioManager;
 import android.os.Vibrator;
@@ -13,6 +20,7 @@ import android.os.Bundle;
 
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.identity.intents.AddressConstants;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
@@ -52,9 +60,10 @@ import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.jar.Manifest;
 
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks
-        , GoogleApiClient.OnConnectionFailedListener{
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
 
     private GoogleMap mMap;
     private List<Address> addresses = null, testeAddresses = null;
@@ -84,18 +93,26 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      */
     private CoordinatorLayout coordinatorLayout;
     protected static final String TAG = "LifeCycle";
-    private boolean menuIsOpen = false;
     private List<String> textoNomes = new ArrayList<>();
     private List<String> textoEnderecos = new ArrayList<>();
+    private List<Boolean> booleanAtivos = new ArrayList<>();
     private List<String> textoLatLng = new ArrayList<>();
     private MyAdapter myAdapter;
-    private com.getbase.floatingactionbutton.FloatingActionButton minfb1, minfb2, minfb3;
+    private com.getbase.floatingactionbutton.FloatingActionButton minfbAtencao, minfb1, minfb2, minfb3;
+    private com.getbase.floatingactionbutton.FloatingActionsMenu menufb;
+    private TextView textIconAddMarker, textIconMarkers, textIconEditLocation, textIconListOptions
+            , textIconInfo, textEndereco;
+    private Typeface font;
 
+    @TargetApi(Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         setUpMapIfNeeded();
+
+        ActivityCompat.requestPermissions(MapsActivity.this,
+                new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 0);
 
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id
                 .coordinatorLayout);
@@ -104,16 +121,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
 
-        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        statusAudio = audioManager.getRingerMode();
-        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-
         geocoder = new Geocoder(this);
         bdNew = new BDNew(this);
         bdOld = new BDOld(this);
         marcadores = new Marcadores();
         currentMarcadores = bdNew.buscar();
         circles = new ArrayList();
+        font = Typeface.createFromAsset(getAssets(), "MaterialIcons-Regular.ttf");
 
         mMap.setOnMapLongClickListener(new OnMapLongClickListener() {
             @Override
@@ -126,29 +140,31 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         for (Marcadores m : bdNew.buscar()) {
             if ( m != null ) {
-                Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng(m.getLatitude(), m.getLongitude()))
-                        .icon(BitmapDescriptorFactory.defaultMarker(215.f))
+                mMap.addMarker(new MarkerOptions().position(new LatLng(m.getLatitude(),
+                        m.getLongitude())).icon(BitmapDescriptorFactory.defaultMarker(215.f))
                         .title(m.getNome()));
-                //marker.showInfoWindow();
                 addCircle(m);
                 textoNomes.add(m.getNome());
                 textoEnderecos.add(m.getEndereco());
+                booleanAtivos.add(m.getAtivo() == 1? true : false);
                 textoLatLng.add(m.getLatitude()+", "+m.getLongitude());
             }
         }
 
-        myAdapter = new MyAdapter(MapsActivity.this, textoNomes, textoEnderecos);
+        myAdapter = new MyAdapter(MapsActivity.this, textoNomes, textoEnderecos, booleanAtivos);
         myAdapter.notifyDataSetChanged();
 
         findViewById(R.id.fab)
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
+                        final AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
                         LayoutInflater layoutInflater = getLayoutInflater();
                         View view = layoutInflater.inflate(R.layout.titulo_alerta_lista_de_marcadores, null);
-                        builder.setCustomTitle(view)
-                                .setAdapter(myAdapter, new DialogInterface.OnClickListener() {
+                        textIconMarkers = (TextView) view.findViewById(R.id.text_icon_markers);
+                        textIconMarkers.setTypeface(font);
+                        builder.setCustomTitle(view);
+                        builder.setAdapter(myAdapter, new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         for (Marcadores marcadores : bdNew.buscar()) {
@@ -168,11 +184,35 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     }
                 });
 
+        menufb = (com.getbase.floatingactionbutton.FloatingActionsMenu) findViewById(R.id.menuFloat);
+        menufb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                        == PackageManager.PERMISSION_GRANTED) {
+                    minfbAtencao.setVisibility(View.GONE);
+                } else if (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    minfbAtencao.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        minfbAtencao = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.minfabAlert);
+        minfbAtencao.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                menufb.collapse();
+                ActivityCompat.requestPermissions(MapsActivity.this,
+                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+            }
+        });
 
         minfb1 = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.minfab1);
         minfb1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                menufb.collapse();
                 if (!boolMapType) {
                     mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
                     boolMapType = true;
@@ -187,6 +227,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         minfb2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                menufb.collapse();
                 try{
                     add(myLatLng);
                 }catch (Exception e){
@@ -198,11 +239,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         minfb3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                menufb.collapse();
                 builder = new AlertDialog.Builder(MapsActivity.this);
                 LayoutInflater layoutInflater = getLayoutInflater();
                 View view = layoutInflater.inflate(R.layout.titulo_alerta_sobre, null);
-                myDialog = builder.setIcon(R.drawable.info)
-                        .setCustomTitle(view)
+                textIconInfo = (TextView) view.findViewById(R.id.text_icon_info);
+                textIconInfo.setTypeface(font);
+                myDialog = builder.setCustomTitle(view)
                         .setMessage(R.string.about)
                         .setNegativeButton(R.string.submit, new DialogInterface.OnClickListener() {
                             @Override
@@ -232,7 +275,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         startService(intent);
 
         Log.i(TAG, getClassName() + ".onCreate() chamado");
-        System.out.println("isMyLocationEnabled: "+mMap.isMyLocationEnabled());
     }
 
     @Override
@@ -331,12 +373,19 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .setAction(R.string.add, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        builder.setIcon(R.drawable.map_marker);
+                        LayoutInflater layoutInflater = getLayoutInflater();
+                        View view = layoutInflater.inflate(R.layout.titulo_alerta_add_marcador, null);
+                        textIconAddMarker = (TextView) view.findViewById(R.id.text_icon_marker);
+                        textIconAddMarker.setTypeface(font);
+
+                        textEndereco = (TextView) view.findViewById(R.id.text_endereco);
 
                         if (endereco[0].contains("null::")) {
-                            builder.setTitle(latLng.latitude + ", " + latLng.longitude + distanceString);
+                            textEndereco.setText(latLng.latitude + ", " + latLng.longitude + distanceString);
+                            builder.setCustomTitle(view);
                         } else {
-                            builder.setTitle(endereco[0] + distanceString);
+                            textEndereco.setText(endereco[0] + distanceString);
+                            builder.setCustomTitle(view);
                         }
 
                         final CharSequence[] alarme = new CharSequence[]{"Ativar alarme"};
@@ -419,6 +468,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 currentMarcadores = bdNew.buscar();
                                 textoNomes.add(marcadores.getNome());
                                 textoEnderecos.add(marcadores.getEndereco());
+                                booleanAtivos.add(marcadores.getAtivo()==1?true:false);
                                 textoLatLng.add(marcadores.getLatitude()+", "+marcadores.getLongitude());
                                 Log.i("SCRIPT", "busca BDOld>" + bdOld.buscar());
                                 Log.i("SCRIPT", "busca BDNew>" + bdNew.buscar());
@@ -491,7 +541,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 testeAddresses = geocoder.getFromLocationName(query, 1);
                 add(new LatLng(testeAddresses.get(0).getLatitude(), testeAddresses.get(0).getLongitude()));
             } catch (Exception e) {
-                Toast.makeText(getApplicationContext(), R.string.local_not_found, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), R.string.local_not_found,
+                        Toast.LENGTH_SHORT).show();
             }
         return false;
         }
@@ -542,7 +593,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             @Override
             public boolean onMarkerClick(final Marker marker) {
-                final LatLng latLng = new LatLng(marker.getPosition().latitude, marker.getPosition().longitude);
+                final LatLng latLng = new LatLng(marker.getPosition().latitude,
+                        marker.getPosition().longitude);
                 int progress = 1;
                 final String[] endereco = new String[]{"null"};
                 Marcadores marcadores = new Marcadores();
@@ -567,8 +619,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 if( endereco[0].contains("null::") ){
                     try {
                         addressMarker = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
-                        endereco[0] = "" + addressMarker.get(0).getThoroughfare() + ", nº " + addressMarker.get(0)
-                                .getSubThoroughfare();
+                        endereco[0] = "" + addressMarker.get(0).getThoroughfare() + ", nº "
+                                + addressMarker.get(0).getSubThoroughfare();
                         marcadores.setEndereco(endereco[0]);
                         bdNew.atualizar(marcadores);
                         //bdOld.atualizar(marcadores);
@@ -584,6 +636,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 final Marcadores finalMarcadores = marcadores;
                 LayoutInflater layoutInflater = getLayoutInflater();
                 View view = layoutInflater.inflate(R.layout.titulo_alerta_clique_marcador, null);
+                textIconListOptions = (TextView) view.findViewById(R.id.text_icon_list_options);
+                textIconListOptions.setTypeface(font);
                 builder.setMessage(endereco[0])
                         .setCustomTitle(view)
                         .setPositiveButton(R.string.tools, new DialogInterface.OnClickListener() {
@@ -591,6 +645,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             public void onClick(DialogInterface dialog, int which) {
                                 LayoutInflater layoutInflater = getLayoutInflater();
                                 View view = layoutInflater.inflate(R.layout.titulo_alerta_editar_marcador, null);
+                                textIconEditLocation = (TextView) view.findViewById(R.id.text_icon_edit_location);
+                                textIconEditLocation.setTypeface(font);
                                 builder2.setCustomTitle(view)
                                         .setMultiChoiceItems(alarme, ativo, new DialogInterface.OnMultiChoiceClickListener() {
                                             @Override
@@ -654,9 +710,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                                     if(textoLatLng.get(i).contains(marcadores.getLatitude()+", "
                                                             +marcadores.getLongitude())){
                                                         textoNomes.remove(i);
-                                                        textoNomes.add(etBetVal.getText().toString());
+                                                        textoNomes.add(marcadores.getNome());
                                                         textoEnderecos.remove(i);
                                                         textoEnderecos.add(marcadores.getEndereco());
+                                                        booleanAtivos.remove(i);
+                                                        booleanAtivos.add(marcadores.getAtivo()==1?true:false);
                                                         textoLatLng.remove(i);
                                                         textoLatLng.add(marcadores.getLatitude()+", "
                                                                 +marcadores.getLongitude());
@@ -692,6 +750,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                             +finalMarcadores.getLongitude())){
                                         textoNomes.remove(i);
                                         textoEnderecos.remove(i);
+                                        booleanAtivos.remove(i);
                                         textoLatLng.remove(i);
                                         break;
                                     }
@@ -734,8 +793,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onConnected(Bundle bundle) {
         Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
-        Log.i("mLastLocation--->", "" + mLastLocation.getLatitude() + ", " + mLastLocation.getLongitude());
         if (mLastLocation != null) {
+            Log.i("mLastLocation--->", "" + mLastLocation.getLatitude() + ", " + mLastLocation.getLongitude());
             myLatLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
             try {
                 addresses = geocoder.getFromLocation(myLatLng.latitude, myLatLng.longitude, 1);

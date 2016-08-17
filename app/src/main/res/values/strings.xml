@@ -6,6 +6,8 @@
     <string name="cancel">CANCELAR</string>
     <string name="tools">EDITAR</string>
     <string name="submit">OK</string>
+    <string name="allow">Permitir</string>
+    <string name="decline">Declinar</string>
     <string name="go_play_store">ENTENDI</string>
     <string name="add"><font fgcolor="#ff2196F3">ADICIONAR</font></string>
     <string name="del">EXCLUIR</string>
@@ -16,4 +18,13 @@
     <string name="wait">Aguarde...</string>
     <string name="meus_marcadores">Meus marcadores</string>
     <string name="editar">Editar</string>
+    <string name="permission_location">Você permite que <b>GPS Alarme PRO</b> acesse sua localização?</string>
+    <string name="exibir_dialogo_permission_location">Não exibir essa caixa de diálogo novamente</string>
+
+    <string name="icon_edit_location">&#xE568;</string>
+    <string name="icon_map">&#xE55B;</string>
+    <string name="icon_list_options">&#xE241;</string>
+    <string name="icon_info">&#xE88E;</string>
+    <string name="icon_marker">&#xE55F;</string>
+    <string name="atention">Atenção</string>
 </resources>

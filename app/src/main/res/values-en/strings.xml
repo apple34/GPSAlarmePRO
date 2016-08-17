@@ -10,4 +10,7 @@
     <string name="next">NEXT</string>
     <string name="about">Powered by <b>Abner Escócio</b>, abner.escocio@gmail.com. This application is perfect for peoples who like of snooze on the bus or metro, and they are not want pass line of destination. Também pode auxiliar aqueles que gostam de ler textos durante a viajem, dando mais tranquilidade e foco para a leitura. Estamos muito gratos por optar pelo <b>Não Passe Da Linha</b>, avalie-nos!
     </string>
+    <string name="permission_location"><![CDATA[Você permite que <b> GPS Alarme PRO </b> acesse sua localização?]]></string>
+    <string name="exibir_dialogo_permission_location">Não exibir essa caixa de diálogo novamente</string>
+    <string name="atention">Atenção</string>
 </resources>

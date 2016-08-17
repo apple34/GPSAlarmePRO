@@ -132,8 +132,8 @@ public class ServiceBackground extends Service {
                                                 .setContentText("Distância de " + distance + " metros")
                                                 .setPriority(2)
                                                 .setColor(getApplicationContext().getResources().getColor(R.color.colorAccent))
-                                                .addAction(R.drawable.more_100_meters, "100 metros", pendingIntent1)
-                                                .addAction(R.drawable.deactivite_alarm, "Desativar", pendingIntent2)
+                                                .addAction(R.mipmap.ic_add_black_18dp, "100 metros", pendingIntent1)
+                                                .addAction(R.mipmap.ic_alarm_off_black_18dp, "Desativar", pendingIntent2)
                                                 .setAutoCancel(true);
                                         notificationManager.notify(0, notifBuilder.build());
                                     }

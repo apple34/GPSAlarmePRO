@@ -2,13 +2,22 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <CheckBox
+        android:id="@+id/swichAtivo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:shadowColor="@color/colorAccent"
+        android:paddingBottom="10sp"
+        android:paddingTop="10sp"
+        android:layout_marginLeft="20sp"/>
     <TextView
         android:id="@+id/textoNome"
         android:text="teste"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="15sp"
-        android:paddingLeft="30sp"
+        android:paddingLeft="10sp"
         android:paddingRight="10sp"
         android:paddingBottom="10sp"
         android:paddingTop="10sp"
@@ -16,6 +25,7 @@
         android:lines="1" />
     <TextView
         android:id="@+id/textoEndereco"
+        android:paddingRight="10sp"
         android:text="uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

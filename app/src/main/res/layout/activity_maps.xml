@@ -48,13 +48,27 @@
         app:fab_addButtonColorNormal="#fafafa"
         app:fab_addButtonPlusIconColor="@color/colorAccent"
         app:fab_addButtonColorPressed="#f1f1f1"
-        app:layout_behavior="br.com.abner.naopassedalinha3.FloatingActionsMenuBehavior">
+        app:layout_behavior="br.com.abner.naopassedalinha3.FloatingActionsMenuBehavior"
+        android:onClick="f"
+        android:nestedScrollingEnabled="false">
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/minfabAlert"
+            android:layout_width="@dimen/fab_size_mini"
+            android:layout_height="@dimen/fab_size_mini"
+            android:visibility="gone"
+            app:fab_size="mini"
+            app:fab_icon="@drawable/atencao_196"
+            app:fab_colorNormal="#ffaa00"
+            app:fab_title="@string/atention"
+            app:fab_colorPressed="@color/colorSecondDark"
+            app:layout_behavior="br.com.abner.naopassedalinha3.FloatingActionButtonBehavior"/>
+
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/minfab1"
             android:layout_width="@dimen/fab_size_mini"
             android:layout_height="@dimen/fab_size_mini"
             app:fab_size="mini"
-            app:fab_icon="@drawable/map"
+            app:fab_icon="@drawable/globe_100"
             app:fab_colorNormal="@color/white"
             app:fab_colorPressed="@color/colorSecondDark"
             app:layout_behavior="br.com.abner.naopassedalinha3.FloatingActionButtonBehavior"/>
@@ -87,7 +101,7 @@
         android:layout_marginRight="80dp"
         android:layout_marginBottom="8dp"
         android:layout_gravity="bottom|end"
-        app:fab_icon="@drawable/icon3_white_small_marker_192"
+        app:fab_icon="@drawable/alarmgps"
         app:fab_colorNormal="@color/colorAccent"
         app:layout_behavior="br.com.abner.naopassedalinha3.FloatingActionButtonBehavior" />
 

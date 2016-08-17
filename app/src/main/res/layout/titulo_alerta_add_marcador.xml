@@ -9,17 +9,17 @@
         android:layout_height="match_parent"
         android:layout_weight="8">
         <TextView
-            android:id="@+id/text_icon_markers"
+            android:id="@+id/text_icon_marker"
             android:layout_width="35sp"
             android:layout_height="35sp"
             android:textSize="35sp"
             android:textAlignment="center"
             android:textColor="@color/white"
-            android:text="@string/icon_map"
-            android:layout_gravity="center"/>
+            android:text="@string/icon_marker"
+            android:layout_gravity="center" />
     </FrameLayout>
     <TextView
-        android:text="@string/meus_marcadores"
+        android:id="@+id/text_endereco"
         android:textColor="@android:color/white"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

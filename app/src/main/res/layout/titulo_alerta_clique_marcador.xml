@@ -8,11 +8,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="8">
-        <ImageView
+        <TextView
+            android:id="@+id/text_icon_list_options"
             android:layout_width="35sp"
             android:layout_height="35sp"
-            android:src="@drawable/options"
-            android:layout_gravity="center" />
+            android:textSize="35sp"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:text="@string/icon_list_options"
+            android:layout_gravity="center"/>
     </FrameLayout>
     <TextView
         android:text="Opções"
