@@ -62,6 +62,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.Manifest;
 
+import br.com.abner.gpsalarmepro.R;
+
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
 
@@ -151,7 +153,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
 
-        myAdapter = new MyAdapter(MapsActivity.this, textoNomes, textoEnderecos, booleanAtivos);
+        myAdapter = new MyAdapter(MapsActivity.this, textoNomes, textoEnderecos);
         myAdapter.notifyDataSetChanged();
 
         findViewById(R.id.fab)

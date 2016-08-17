@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 
+import br.com.abner.gpsalarmepro.R;
+
 /**
  * Created by AbnerAdmin on 13/09/2015.
  */

@@ -5,7 +5,7 @@ android {
     buildToolsVersion '23.0.2'
 
     defaultConfig {
-        applicationId "br.com.abner.naopassedalinha3"
+        applicationId "br.com.abner.gpsalarmepro"
         minSdkVersion 22
         targetSdkVersion 23
         versionCode 1

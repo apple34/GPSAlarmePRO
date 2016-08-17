@@ -32,6 +32,8 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.abner.gpsalarmepro.R;
+
 /**
  * Created by Abner on 26/02/2016.
  */

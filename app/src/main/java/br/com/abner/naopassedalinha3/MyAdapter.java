@@ -14,6 +14,8 @@ import android.widget.TextView;
 import java.util.Iterator;
 import java.util.List;
 
+import br.com.abner.gpsalarmepro.R;
+
 /**
  * Created by RavDellV2 on 12/05/2016.
  */
@@ -27,6 +29,12 @@ public class MyAdapter extends BaseAdapter{
         this.textoEnderecos = textoEnderecos;
         this.textoNomes = textoNomes;
         this.booleanAtivos = booleanAtivos;
+        mInflater = LayoutInflater.from(context);
+    }
+
+    public MyAdapter(Context context, List<String> textoNomes, List<String> textoEnderecos) {
+        this.textoEnderecos = textoEnderecos;
+        this.textoNomes = textoNomes;
         mInflater = LayoutInflater.from(context);
     }
 
@@ -47,18 +55,14 @@ public class MyAdapter extends BaseAdapter{
 
     @Override
     public View getView(int position, View view, ViewGroup parent) {
-        if( view != null ){
-            view = mInflater.inflate(R.layout.itens, parent, false);
 
-            CheckBox swichAtivo = (CheckBox) view.findViewById(R.id.swichAtivo);
-            swichAtivo.setChecked(booleanAtivos.get(position));
+        view = mInflater.inflate(R.layout.itens, parent, false);
 
-            TextView textoNome = (TextView) view.findViewById(R.id.textoNome);
-            textoNome.setText(textoNomes.get(position));
-            //textoNome.setText(Html.fromHtml("<b>"+textoNomes.get(position)+"</b>")+" - "+Html.fromHtml("<font color=\"red\">"+textoEnderecos.get(position)+"</font>"));
-            TextView textoEndereco = (TextView) view.findViewById(R.id.textoEndereco);
-            textoEndereco.setText(textoEnderecos.get(position));
-        }
+        TextView textoNome = (TextView) view.findViewById(R.id.textoNome);
+        textoNome.setText(textoNomes.get(position));
+
+        TextView textoEndereco = (TextView) view.findViewById(R.id.textoEndereco);
+        textoEndereco.setText(textoEnderecos.get(position));
 
         return view;
     }
