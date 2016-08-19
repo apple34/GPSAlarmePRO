@@ -79,7 +79,7 @@ public class ServiceBackground extends Service {
                     if( distance < m.getDistancia() ) {
                         notifBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(getApplicationContext())
                                         .setSmallIcon( R.drawable.alarmgps )
-                                        .setVibrate( new long[]{ 500, 10000 } )
+                                        .setVibrate( new long[]{ 0, 10000, 0 } )
                                         .setSound(RingtoneManager.getDefaultUri( RingtoneManager.TYPE_ALARM ))
                                         .setContentTitle(m.getNome()+" - "+m.getEndereco());
                         final Intent resultIntent = new Intent(getApplicationContext(), MapsActivity.class);
@@ -115,11 +115,14 @@ public class ServiceBackground extends Service {
                                     public void run() {
                                         int incr = (int) (100 - (100 * distance) / m.getDistancia());
                                         notifBuilder.setProgress(100, incr, false)
-                                                .setContentText("Distância de " + distance + " metros")
+                                                .setContentText(getResources().getString(R.string.distance_of)
+                                                        + " " + distance + " " + getResources().getString(R.string.meters))
                                                 .setPriority(2)
                                                 .setColor(getApplicationContext().getResources().getColor(R.color.colorAccent))
-                                                .addAction(R.mipmap.ic_add_black_18dp, "100 metros", pendingIntent1)
-                                                .addAction(R.mipmap.ic_alarm_off_black_18dp, "Desativar", pendingIntent2)
+                                                .addAction(R.mipmap.ic_add_black_18dp, "100 "
+                                                        + getResources().getString(R.string.meters), pendingIntent1)
+                                                .addAction(R.mipmap.ic_alarm_off_black_18dp, ""
+                                                        + getResources().getString(R.string.deactive), pendingIntent2)
                                                 .setAutoCancel(true);
                                         notificationManager.notify(0, notifBuilder.build());
                                     }

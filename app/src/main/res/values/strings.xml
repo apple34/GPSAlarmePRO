@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">GPS Alarme PRO</string>
-    <string name="version">versão 1.0</string>
+    <string name="version">versão 1.2</string>
     <string name="title_activity_maps"><font fgcolor="#ffffffff">GPS Alarme PRO</font></string>
     <string name="raio">Raio de alarme</string>
     <string name="cancel">CANCELAR</string>
@@ -21,10 +21,20 @@
     <string name="permission_location">Você permite que <b>GPS Alarme PRO</b> acesse sua localização?</string>
     <string name="exibir_dialogo_permission_location">Não exibir essa caixa de diálogo novamente</string>
 
-    <string name="icon_edit_location">&#xE568;</string>
-    <string name="icon_map">&#xE55B;</string>
-    <string name="icon_list_options">&#xE241;</string>
-    <string name="icon_info">&#xE88E;</string>
-    <string name="icon_marker">&#xE55F;</string>
+    <string name="icon_edit_location" translatable="false">&#xE568;</string>
+    <string name="icon_map" translatable="false">&#xE55B;</string>
+    <string name="icon_list_options" translatable="false">&#xE241;</string>
+    <string name="icon_info" translatable="false">&#xE88E;</string>
+    <string name="icon_marker" translatable="false">&#xE55F;</string>
     <string name="atention">Atenção</string>
+    <string name="distance_of">Distância de</string>
+    <string name="meters">metros</string>
+    <string name="deactive">Desativar</string>
+    <string name="at">à</string>
+    <string name="activite_alarme">Ativar alarme</string>
+    <string name="canceled">Cancelado</string>
+    <string name="without_name">Sem nome</string>
+    <string name="active">Ativo</string>
+    <string name="options">Opções</string>
+    <string name="name_of_marker">Nome do marcador</string>
 </resources>

@@ -1,16 +1,34 @@
 <resources>
-    <string name="app_name">Nao Passe Da Linha</string>
-    <string name="version">version 1.0</string>
-    <string name="title_activity_maps">GPS Alarm PRO</string>
+    <string name="app_name">GPS Alarm PRO</string>
+    <string name="version">version 1.2</string>
+    <string name="title_activity_maps"><font fgcolor="#ffffffff">GPS Alarm PRO</font></string>
     <string name="cancel">CANCEL</string>
     <string name="tools">EDIT</string>
     <string name="submit">OK</string>
     <string name="go_play_store">UNDERSTOOD</string>
-    <string name="add">ADD</string>
+    <string name="add"><font fgcolor="#ff2196F3">ADD</font></string>
     <string name="next">NEXT</string>
-    <string name="about">Powered by <b>Abner Escócio</b>, abner.escocio@gmail.com. This application is perfect for peoples who like of snooze on the bus or metro, and they are not want pass line of destination. Também pode auxiliar aqueles que gostam de ler textos durante a viajem, dando mais tranquilidade e foco para a leitura. Estamos muito gratos por optar pelo <b>Não Passe Da Linha</b>, avalie-nos!
+    <string name="about">Powered by <b>Abner Escócio</b>, abner.escocio@gmail.com. This application is perfect for peoples who like of snooze on the bus or metro, and they are not want pass line of destination. You can also help those who like to read texts during the journey, giving more tranquility and focus for reading. We are very grateful to opt for <b>GPS Alarm PRO</b>, rate us!
     </string>
-    <string name="permission_location"><![CDATA[Você permite que <b> GPS Alarme PRO </b> acesse sua localização?]]></string>
-    <string name="exibir_dialogo_permission_location">Não exibir essa caixa de diálogo novamente</string>
-    <string name="atention">Atenção</string>
+    <string name="permission_location">You allow that <b> GPS Alarm PRO </b> access your location?</string>
+    <string name="exibir_dialogo_permission_location">Not show this dialog box again</string>
+    <string name="atention">Atention</string>
+    <string name="allow">Allow</string>
+    <string name="decline">Decline</string>
+    <string name="del">EXCLUDE</string>
+    <string name="editar">Edit</string>
+    <string name="local_not_found">Location not found, verify your connection with network</string>
+    <string name="meus_marcadores">My markers</string>
+    <string name="raio">Alarm radius</string>
+    <string name="wait">Wait...</string>
+    <string name="distance_of">Distance of</string>
+    <string name="meters">meters</string>
+    <string name="deactive">Deactive</string>
+    <string name="at">at</string>
+    <string name="activite_alarme">Active alarm</string>
+    <string name="canceled">Canceled</string>
+    <string name="without_name">Without name</string>
+    <string name="active">Active</string>
+    <string name="options">Options</string>
+    <string name="name_of_marker">Name of marker</string>
 </resources>

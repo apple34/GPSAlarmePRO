@@ -2,6 +2,7 @@ package br.com.abner.gpsalarmepro;
 
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -11,6 +12,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.media.AudioManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -53,8 +55,6 @@ import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import br.com.abner.gpsalarmepro.R;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
@@ -251,6 +251,19 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
 
+                                Uri uri = Uri.parse("market://details?id=" + getApplicationContext().getPackageName());
+                                Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
+                                goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
+                                        Intent.FLAG_ACTIVITY_NEW_DOCUMENT |
+                                        Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                                try {
+                                    startActivity(goToMarket);
+                                } catch (ActivityNotFoundException e) {
+                                    startActivity(new Intent(Intent.ACTION_VIEW,
+                                            Uri.parse("http://play.google.com/store/apps/details?id="
+                                                    + getApplicationContext().getPackageName())));
+                                }
+
                             }
                         })
                         .setOnDismissListener(new DialogInterface.OnDismissListener() {
@@ -319,13 +332,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         String s = getClass().getName();
         return s.substring(s.lastIndexOf("."));
     }
-//    public void lastAddrees() {
-//        BDNewCore bdNewCore = new BDNewCore(getApplicationContext());
-//        SQLiteDatabase sqLiteDatabase = bdNewCore.getWritableDatabase();
-//        Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM NewTable WHERE _id = " +
-//                "(SELECT MAX(_id) FROM NewTable)", null);
-//        sv.setSuggestionsAdapter(new TodoCursorAdapter(this,cursor));
-//    }
 
     private void add ( final LatLng latLng ){
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -360,7 +366,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         final String distanceString;
 
         distanceInt = (int) SphericalUtil.computeDistanceBetween(myLatLng, latLng);
-        distanceString = " (à " + String.valueOf(distanceInt) + " metros)";
+        distanceString = " ("+ getResources().getString(R.string.at) + " "
+                + String.valueOf(distanceInt) + " " + getResources().getString(R.string.meters) + ")";
 
         Snackbar snackbar = Snackbar.make(coordinatorLayout, endereco[0], Snackbar.LENGTH_LONG)
                 .setDuration(5000)
@@ -382,7 +389,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             builder.setCustomTitle(view);
                         }
 
-                        final CharSequence[] alarme = new CharSequence[]{"Ativar alarme"};
+                        final CharSequence[] alarme = new CharSequence[]{getResources().getString(R.string.activite_alarme)};
                         final boolean[] ativo = new boolean[alarme.length];
                         builder.setMultiChoiceItems(alarme, ativo, new DialogInterface.OnMultiChoiceClickListener() {
                             @Override
@@ -428,7 +435,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Toast.makeText(getApplicationContext(), "Cancelado", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), getResources().getString(R.string.canceled), Toast.LENGTH_SHORT).show();
                             }
                         }).setPositiveButton(R.string.add, new DialogInterface.OnClickListener() {
                             @Override
@@ -449,7 +456,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 if (!etBetVal.getText().toString().isEmpty()) {
                                     marcadores.setNome(etBetVal.getText().toString());
                                 } else {
-                                    marcadores.setNome("Sem nome");
+                                    marcadores.setNome(getResources().getString(R.string.without_name));
                                 }
                                 marcadores.setEndereco(endereco[0]);
                                 marcadores.setLatitude(latLng.latitude);
@@ -581,7 +588,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             public int distance;
-            final CharSequence[] alarme = new CharSequence[]{"Ativo"};
+            final CharSequence[] alarme = new CharSequence[]{getResources().getString(R.string.active)};
             public boolean[] ativo = new boolean[alarme.length];
 
 
