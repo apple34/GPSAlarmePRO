@@ -41,12 +41,12 @@
             </intent-filter>
         </activity>
         <service android:name=".ServiceBackground">
+        </service>
+        <receiver android:name=".BootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
-                <action android:name="ACAO_PARA_INICIAR_O_SERVICO"></action>
-                <category android:name="android.intent.category.DEFAULT"></category>
             </intent-filter>
-        </service>
+        </receiver>
         <!-- ATTENTION: This was auto-generated to add Google Play services to your project for
              App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
         <meta-data

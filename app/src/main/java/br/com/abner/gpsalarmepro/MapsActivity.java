@@ -1,8 +1,10 @@
 package br.com.abner.gpsalarmepro;
 
 import android.annotation.TargetApi;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -277,11 +279,23 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
 
-        intent = new Intent(this, ServiceBackground.class);
-        intent.setAction("null");
-        startService(intent);
+        if( !isMyServiceRunning(ServiceBackground.class) ){
+            intent = new Intent(this, ServiceBackground.class);
+            intent.setAction("null");
+            startService(intent);
+        }
 
         Log.i(TAG, getClassName() + ".onCreate() chamado");
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

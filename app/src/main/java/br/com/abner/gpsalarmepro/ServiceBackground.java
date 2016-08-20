@@ -13,6 +13,7 @@ import android.os.IBinder;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -262,6 +263,8 @@ public class ServiceBackground extends Service {
                 }
             }
         }
+
+        Toast.makeText(getApplicationContext(), "Serviço de GPS Alarme PRO foi interrompido", Toast.LENGTH_LONG).show();
     }
 
     private void initializeLocationManager() {
