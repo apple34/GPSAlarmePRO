@@ -32,6 +32,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -386,6 +387,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         Snackbar snackbar = Snackbar.make(coordinatorLayout, endereco[0], Snackbar.LENGTH_LONG)
                 .setDuration(5000)
                 .setAction(R.string.add, new View.OnClickListener() {
+                    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
                     @Override
                     public void onClick(View v) {
                         LayoutInflater layoutInflater = getLayoutInflater();
@@ -656,6 +658,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 builder.setMessage(endereco[0])
                         .setCustomTitle(view)
                         .setPositiveButton(R.string.tools, new DialogInterface.OnClickListener() {
+                            @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 LayoutInflater layoutInflater = getLayoutInflater();

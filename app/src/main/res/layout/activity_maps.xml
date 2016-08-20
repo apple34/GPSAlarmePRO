@@ -12,6 +12,12 @@
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:layout_alignParentTop="false">
+        <ProgressBar
+            android:id="@+id/progress"
+            android:layout_gravity="center"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:indeterminate="true"/>
         <LinearLayout
         android:layout_height="match_parent"
         android:layout_width="match_parent"
