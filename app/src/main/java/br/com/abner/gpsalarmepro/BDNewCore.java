@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class BDNewCore extends SQLiteOpenHelper {
     private static final String NOME_BD = "NewTable";
-    private static final int VERSAO_BD = 2;
+    private static final int VERSAO_BD = 3;
 
     public BDNewCore(Context context){
         super(context,NOME_BD,null,VERSAO_BD);
