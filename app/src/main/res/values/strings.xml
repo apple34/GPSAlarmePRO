@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">GPS Alarme PRO</string>
-    <string name="version">versão 1.2</string>
+    <string name="version">versão 1.4</string>
     <string name="title_activity_maps"><font fgcolor="#ffffffff">GPS Alarme PRO</font></string>
     <string name="raio">Raio de alarme</string>
     <string name="cancel">CANCELAR</string>
@@ -9,7 +9,7 @@
     <string name="allow">Permitir</string>
     <string name="decline">Declinar</string>
     <string name="go_play_store">ENTENDI</string>
-    <string name="add"><font fgcolor="#ff2196F3">ADICIONAR</font></string>
+    <string name="add">ADICIONAR</string>
     <string name="del">EXCLUIR</string>
     <string name="next">AVANÇAR</string>
     <string name="local_not_found">Lugar não encontrado, verifique sua conexão com a internet</string>

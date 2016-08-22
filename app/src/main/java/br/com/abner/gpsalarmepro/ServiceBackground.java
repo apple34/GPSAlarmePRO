@@ -79,7 +79,7 @@ public class ServiceBackground extends Service {
                             , new LatLng(m.getLatitude(), m.getLongitude()));
                     if( distance < m.getDistancia() ) {
                         notifBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(getApplicationContext())
-                                        .setSmallIcon( R.drawable.alarmgps )
+                                        .setSmallIcon( R.mipmap.icon3 )
                                         .setVibrate( new long[]{ 0, 10000, 0 } )
                                         .setSound(RingtoneManager.getDefaultUri( RingtoneManager.TYPE_ALARM ))
                                         .setContentTitle(m.getNome()+" - "+m.getEndereco());
@@ -120,9 +120,9 @@ public class ServiceBackground extends Service {
                                                         + " " + distance + " " + getResources().getString(R.string.meters))
                                                 .setPriority(2)
                                                 .setColor(getApplicationContext().getResources().getColor(R.color.colorAccent))
-                                                .addAction(R.mipmap.ic_add_black_18dp, "100 "
+                                                .addAction(R.drawable.ic_add_black_24dp, "100 "
                                                         + getResources().getString(R.string.meters), pendingIntent1)
-                                                .addAction(R.mipmap.ic_alarm_off_black_18dp, ""
+                                                .addAction(R.drawable.ic_alarm_off_black_24dp, ""
                                                         + getResources().getString(R.string.deactive), pendingIntent2)
                                                 .setAutoCancel(true);
                                         notificationManager.notify(0, notifBuilder.build());

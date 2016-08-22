@@ -31,6 +31,7 @@ public class BDNew {
         valores.put("longitude", marcadores.getLongitude());
         valores.put("ativo", marcadores.getAtivo());
         valores.put("distancia", marcadores.getDistancia());
+        valores.put("dias_da_semana", marcadores.getDiasDaSemana());
 
         bd.insert("NewTable", null, valores);
     }
@@ -45,6 +46,7 @@ public class BDNew {
         valores.put("longitude", marcadores.getLongitude());
         valores.put("ativo", marcadores.getAtivo());
         valores.put("distancia", marcadores.getDistancia());
+        valores.put("dias_da_semana", marcadores.getDiasDaSemana());
 
         bd.update("NewTable", valores, "_id = ?", new String[]{"" + marcadores.getId()});
     }
@@ -62,7 +64,8 @@ public class BDNew {
 
     public List<Marcadores> buscar(){
         List<Marcadores> list = new ArrayList<>();
-        String[] colunas = new String[]{"_id", "nome", "endereco", "latitude", "longitude", "ativo", "distancia"};
+        String[] colunas = new String[]{"_id", "nome", "endereco", "latitude", "longitude", "ativo",
+                "distancia", "dias_da_semana"};
 
         Cursor cursor = bd.query("NewTable", colunas, null, null, null, null, null);
                 if(cursor.getCount() > 0) {
@@ -77,36 +80,11 @@ public class BDNew {
                         marcadores.setLongitude(cursor.getDouble(4));
                         marcadores.setAtivo(cursor.getLong(5));
                         marcadores.setDistancia(cursor.getLong(6));
+                        marcadores.setDiasDaSemana(cursor.getString(7));
                         list.add(marcadores);
 
                     } while (cursor.moveToNext());
                 }
-        return(list);
-    }
-
-    public List<Marcadores> buscar2(){
-        List<Marcadores> list = new ArrayList<>();
-        String[] colunas = new String[]{"_id", "endereco", "latitude", "longitude", "ativo", "distancia"};
-
-        Cursor cursor = bd.query("NewTable", colunas, null, null, null, null, null);
-        if(cursor.getCount() > 0) {
-            cursor.moveToFirst();
-            do {
-
-                Marcadores marcadores = new Marcadores();
-                marcadores.setId(cursor.getLong(0));
-                marcadores.setEndereco(cursor.getString(1));
-                marcadores.setLatitude(cursor.getDouble(2));
-                marcadores.setLongitude(cursor.getDouble(3));
-                marcadores.setAtivo(cursor.getLong(4));
-                marcadores.setDistancia(cursor.getLong(5));
-                list.add(marcadores);
-
-            } while (cursor.moveToNext());
-        }
-
-        cursor.close();
-
         return(list);
     }
 

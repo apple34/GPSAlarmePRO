@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class BDNewCore extends SQLiteOpenHelper {
     private static final String NOME_BD = "NewTable";
-    private static final int VERSAO_BD = 3;
+    private static final int VERSAO_BD = 4;
 
     public BDNewCore(Context context){
         super(context,NOME_BD,null,VERSAO_BD);
@@ -24,7 +24,8 @@ public class BDNewCore extends SQLiteOpenHelper {
                 "latitude real," +
                 "longitude real," +
                 "ativo long," +
-                "distancia long);");
+                "distancia long," +
+                "dias_da_semana text);");
     }
 
     @Override

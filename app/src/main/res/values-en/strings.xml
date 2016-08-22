@@ -1,12 +1,12 @@
 <resources>
     <string name="app_name">GPS Alarm PRO</string>
-    <string name="version">version 1.2</string>
+    <string name="version">version 1.4</string>
     <string name="title_activity_maps"><font fgcolor="#ffffffff">GPS Alarm PRO</font></string>
     <string name="cancel">CANCEL</string>
     <string name="tools">EDIT</string>
     <string name="submit">OK</string>
     <string name="go_play_store">UNDERSTOOD</string>
-    <string name="add"><font fgcolor="#ff2196F3">ADD</font></string>
+    <string name="add">ADD</string>
     <string name="next">NEXT</string>
     <string name="about">Powered by <b>Abner Escócio</b>, abner.escocio@gmail.com. This application is perfect for peoples who like of snooze on the bus or metro, and they are not want pass line of destination. You can also help those who like to read texts during the journey, giving more tranquility and focus for reading. We are very grateful to opt for <b>GPS Alarm PRO</b>, rate us!
     </string>
@@ -32,6 +32,6 @@
     <string name="options">Options</string>
     <string name="name_of_marker">Name of marker</string>
     <string name="description_1">Pode dormir, pode ler, mas nunca mais se preocupe em passar do seu destino</string>
-    <string name="description_2">Pressione o mapa, ative o alarme, dê um raio de distância e relaxe</string>
+    <string name="description_2">Clique no mapa, ative o alarme, dê um raio de distância e relaxe</string>
     <string name="description_3">Ler ou dormir durante a viajem nunca foi tão tranquilo</string>
 </resources>

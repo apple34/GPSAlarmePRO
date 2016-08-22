@@ -14,7 +14,6 @@ import android.graphics.Typeface;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -33,19 +32,19 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -55,14 +54,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, GoogleMap.OnMapLoadedCallback {
 
     private GoogleMap mMap;
     private List<Address> addresses = null, testeAddresses = null;
@@ -77,19 +75,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private BDOld bdOld;
     private Marcadores marcadores;
     private AlertDialog.Builder builder;
-    private Vibrator vibrator;
-    private AudioManager audioManager;
-    private int statusAudio;
-    private SubActionButton bnt3;
     private List<Marcadores> currentMarcadores;
     private List<Circle> circles;
     private Circle circleMarker;
     private Intent intent;
-
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
     private CoordinatorLayout coordinatorLayout;
     protected static final String TAG = "LifeCycle";
     private List<String> textoNomes = new ArrayList<>();
@@ -99,9 +88,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private MyAdapter myAdapter;
     private com.getbase.floatingactionbutton.FloatingActionButton minfbAtencao, minfb1, minfb2, minfb3;
     private FloatingActionsMenu menufb;
+    private FloatingActionButton fab;
     private TextView textIconAddMarker, textIconMarkers, textIconEditLocation, textIconListOptions
             , textIconInfo, textEndereco;
+    private CheckBox checkBoxDomingo, checkBoxSegunda, checkBoxTerca, checkBoxQuarta, checkBoxQuinta
+            , checkBoxSexta, checkBoxSabado;
     private Typeface font;
+    private Vibrator vibrator;
 
     @TargetApi(Build.VERSION_CODES.M)
     @Override
@@ -141,6 +134,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .coordinatorLayout);
 
         mMap.setMyLocationEnabled(true);
+        mMap.setOnMapLoadedCallback(this);
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
 
@@ -151,10 +145,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         currentMarcadores = bdNew.buscar();
         circles = new ArrayList();
         font = Typeface.createFromAsset(getAssets(), "MaterialIcons-Regular.ttf");
+        vibrator = (Vibrator) this.getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
 
-        mMap.setOnMapLongClickListener(new OnMapLongClickListener() {
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
-            public void onMapLongClick(LatLng latLng) {
+            public void onMapClick(LatLng latLng) {
+                vibrator.vibrate(500);
                 add(latLng);
             }
         });
@@ -177,8 +173,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         myAdapter = new MyAdapter(MapsActivity.this, textoNomes, textoEnderecos);
         myAdapter.notifyDataSetChanged();
 
-        findViewById(R.id.fab)
-                .setOnClickListener(new View.OnClickListener() {
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         final AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
@@ -377,6 +373,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void add ( final LatLng latLng ){
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         final String[] endereco = new String[1];
+        final boolean[] booleanCheckboxArray = new boolean[7];
         final Marker marker = mMap.addMarker(new MarkerOptions()
                 .position(latLng)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
@@ -433,6 +430,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                         final CharSequence[] alarme = new CharSequence[]{getResources().getString(R.string.activite_alarme)};
                         final boolean[] ativo = new boolean[alarme.length];
+                        ativo[0] = true;
                         builder.setMultiChoiceItems(alarme, ativo, new DialogInterface.OnMultiChoiceClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which, boolean isChecked) {
@@ -442,6 +440,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                         LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
                         v = inflater.inflate(R.layout.seekbar, null);
+
+                        checkBoxDomingo = (CheckBox) v.findViewById(R.id.checkbox_domingo);
+                        checkBoxSegunda = (CheckBox) v.findViewById(R.id.checkbox_segunda);
+                        checkBoxTerca = (CheckBox) v.findViewById(R.id.checkbox_terca);
+                        checkBoxQuarta = (CheckBox) v.findViewById(R.id.checkbox_quarta);
+                        checkBoxQuinta = (CheckBox) v.findViewById(R.id.checkbox_quinta);
+                        checkBoxSexta = (CheckBox) v.findViewById(R.id.checkbox_sexta);
+                        checkBoxSabado = (CheckBox) v.findViewById(R.id.checkbox_sabado);
 
                         builder.setView(v);
 
@@ -500,10 +506,20 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 } else {
                                     marcadores.setNome(getResources().getString(R.string.without_name));
                                 }
+
+                                booleanCheckboxArray[0] = checkBoxDomingo.isChecked();
+                                booleanCheckboxArray[1] = checkBoxSegunda.isChecked();
+                                booleanCheckboxArray[2] = checkBoxTerca.isChecked();
+                                booleanCheckboxArray[3] = checkBoxQuarta.isChecked();
+                                booleanCheckboxArray[4] = checkBoxQuinta.isChecked();
+                                booleanCheckboxArray[5] = checkBoxSexta.isChecked();
+                                booleanCheckboxArray[6] = checkBoxSabado.isChecked();
+
                                 marcadores.setEndereco(endereco[0]);
                                 marcadores.setLatitude(latLng.latitude);
                                 marcadores.setLongitude(latLng.longitude);
                                 marcadores.toLong(ativo[0]);
+                                marcadores.setDiasDaSemana(arrayBooleanToStringNumber(booleanCheckboxArray));
                                 bdOld.inserir(marcadores);
                                 BDOldToBDNew(bdOld);
                                 BDNewToBDOld(bdNew);
@@ -537,6 +553,26 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         View snackbarView = snackbar.getView();
         snackbarView.setBackgroundColor(Color.argb(255, 33, 150, 243));
         snackbar.show();
+    }
+
+    private String arrayBooleanToStringNumber(boolean[] booleanArray){
+
+        StringBuilder stringBuilder = new StringBuilder();
+        int[] intArray = new int[booleanArray.length];
+
+        for( int i=0; i<booleanArray.length; i++ ){
+            if(booleanArray[i]){
+                intArray[i] = 1;
+            }else{
+                intArray[i] = 0;
+            }
+        }
+
+        for( int number : intArray ){
+            stringBuilder.append(number);
+        }
+
+        return stringBuilder.toString();
     }
 
     private void addCircle(Marcadores m){
@@ -575,6 +611,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
+    }
+
+    @Override
+    public void onMapLoaded() {
     }
 
     private class SearchFiltro implements SearchView.OnQueryTextListener {

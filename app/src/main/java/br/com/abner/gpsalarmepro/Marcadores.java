@@ -5,13 +5,15 @@ package br.com.abner.gpsalarmepro;
  */
 public class Marcadores {
 
-    public Marcadores(long id, String endereco, Double latitude, Double longitude, long ativo, long distancia) {
+    public Marcadores(long id, String endereco, Double latitude, Double longitude, long ativo,
+                      long distancia, String diasDaSemana) {
         this.id = id;
         this.endereco = endereco;
         this.latitude = latitude;
         this.longitude = longitude;
         this.ativo = ativo;
         this.distancia = distancia;
+        this.diasDaSemana = diasDaSemana;
     }
 
     public Marcadores(){}
@@ -23,6 +25,7 @@ public class Marcadores {
     private Double longitude;
     private long ativo = 0;
     private long distancia = 500;
+    private String diasDaSemana = "0000000";
 
     public long getId() {
         return id;
@@ -44,6 +47,9 @@ public class Marcadores {
     }
     public long getDistancia() {
         return distancia;
+    }
+    public String getDiasDaSemana() {
+        return diasDaSemana;
     }
 
     public void setId(long id) {
@@ -68,6 +74,9 @@ public class Marcadores {
         if( distancia < 0 ) distancia = 0;
         this.distancia = distancia;
     }
+    public void setDiasDaSemana(String diasDaSemana) {
+        this.diasDaSemana = diasDaSemana;
+    }
 
     public void toLong(boolean ativo){
         if (ativo == true) {
@@ -79,6 +88,7 @@ public class Marcadores {
 
     @Override
     public String toString() {
-        return "{"+id+": "+nome+", "+endereco+", "+latitude+", "+longitude+", "+ ativo +", "+distancia+" metros}";
+        return "{"+id+": "+nome+", "+endereco+", "+latitude+", "+longitude+", "+ ativo +", " +
+                distancia+" metros, "+diasDaSemana+" dias da semana}";
     }
 }

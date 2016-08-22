@@ -30,6 +30,7 @@ public class BDOld {
         valores.put("longitude", marcadores.getLongitude());
         valores.put("ativo", marcadores.getAtivo());
         valores.put("distancia", marcadores.getDistancia());
+        valores.put("dias_da_semana", marcadores.getDiasDaSemana());
 
         bd.insert("OldTable", null, valores);
     }
@@ -44,6 +45,7 @@ public class BDOld {
         valores.put("longitude", marcadores.getLongitude());
         valores.put("ativo", marcadores.getAtivo());
         valores.put("distancia", marcadores.getDistancia());
+        valores.put("dias_da_semana", marcadores.getDiasDaSemana());
 
         bd.update("OldTable", valores, "_id = ?", new String[]{"" + marcadores.getId()});
     }
@@ -60,7 +62,8 @@ public class BDOld {
 
     public List<Marcadores> buscar(){
         List<Marcadores> list = new ArrayList<>();
-        String[] colunas = new String[]{"_id", "nome", "endereco", "latitude", "longitude", "ativo", "distancia"};
+        String[] colunas = new String[]{"_id", "nome", "endereco", "latitude", "longitude", "ativo",
+                "distancia", "dias_da_semana"};
 
         Cursor cursor = bd.query("OldTable", colunas, null, null, null, null, null);
 
@@ -77,33 +80,7 @@ public class BDOld {
                 marcadores.setLongitude(cursor.getDouble(4));
                 marcadores.setAtivo(cursor.getLong(5));
                 marcadores.setDistancia(cursor.getLong(6));
-                list.add(marcadores);
-
-            }while(cursor.moveToNext());
-        }
-
-        return(list);
-    }
-
-    public List<Marcadores> buscaUltimo(){
-        List<Marcadores> list = new ArrayList<>();
-        String[] colunas = new String[]{"_id", "endereco", "latitude", "longitude", "ativo", "distancia"};
-
-        Cursor cursor = bd.query("OldTable", colunas, "_id = (SELECT MAX(_id) FROM OldTable)"
-                , null, null, null, null);
-
-        if(cursor.getCount() > 0){
-            cursor.moveToFirst();
-
-            do{
-
-                Marcadores marcadores = new Marcadores();
-                marcadores.setId(cursor.getLong(0));
-                marcadores.setEndereco(cursor.getString(1));
-                marcadores.setLatitude(cursor.getDouble(2));
-                marcadores.setLongitude(cursor.getDouble(3));
-                marcadores.setAtivo(cursor.getLong(4));
-                marcadores.setDistancia(cursor.getLong(5));
+                marcadores.setDiasDaSemana(cursor.getString(7).toString());
                 list.add(marcadores);
 
             }while(cursor.moveToNext());

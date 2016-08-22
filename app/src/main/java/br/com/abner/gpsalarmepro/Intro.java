@@ -26,7 +26,7 @@ public class Intro extends AppIntro2 {
 
         addSlide(AppIntroFragment.newInstance("Relaxe", getResources().getString(R.string.description_1),
                 R.drawable.img_slide_01, getResources().getColor(R.color.colorPrimary)));
-        addSlide(AppIntroFragment.newInstance("Pressione", getResources().getString(R.string.description_2),
+        addSlide(AppIntroFragment.newInstance("Clique e crie", getResources().getString(R.string.description_2),
                 R.drawable.img_slide_02, getResources().getColor(R.color.textColorPrimary)));
         addSlide(AppIntroFragment.newInstance("Relaxe denovo", getResources().getString(R.string.description_3),
                 R.drawable.img_slide_03, getResources().getColor(R.color.red)));
