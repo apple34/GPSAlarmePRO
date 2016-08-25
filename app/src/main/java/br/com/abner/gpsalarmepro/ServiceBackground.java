@@ -17,6 +17,9 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import br.com.abner.gpsalarmepro.R;
 
 /**
@@ -31,6 +34,7 @@ public class ServiceBackground extends Service {
     private BDOld bdOld;
     private NotificationCompat.Builder notifBuilder;
     private NotificationManager notificationManager;
+    private Calendar calendar;
 
     private class LocationListener implements android.location.LocationListener
     {
@@ -77,7 +81,7 @@ public class ServiceBackground extends Service {
                     final long distance = (int) SphericalUtil.computeDistanceBetween(
                             new LatLng(location.getLatitude(), location.getLongitude())
                             , new LatLng(m.getLatitude(), m.getLongitude()));
-                    if( distance < m.getDistancia() ) {
+                    if( distance < m.getDistancia() && checkDay(m.getDiasDaSemana()) ) {
                         notifBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(getApplicationContext())
                                         .setSmallIcon( R.mipmap.icon3 )
                                         .setVibrate( new long[]{ 0, 10000, 0 } )
@@ -136,6 +140,17 @@ public class ServiceBackground extends Service {
 
         }
 
+    }
+
+    public boolean checkDay(String diasDaSemana){
+
+        boolean result = false;
+        calendar.setTime(new Date());
+
+        if(String.valueOf(diasDaSemana.charAt(calendar.get(Calendar.DAY_OF_WEEK) - 1)).equals("1"))
+            result = true;
+
+        return result;
     }
 
     private void BDOldToBDNew(BDOld bdOld) {
@@ -225,6 +240,8 @@ public class ServiceBackground extends Service {
         Log.e(TAG, "onCreate");
         notificationManager
                 = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        calendar = Calendar.getInstance();
 
         initializeLocationManager();
         try {

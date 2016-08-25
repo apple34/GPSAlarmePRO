@@ -32,7 +32,8 @@
                 android:id="@+id/sbBetVal"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:padding="7sp"
+                android:paddingTop="7sp"
+                android:paddingBottom="7sp"
                 android:thumbTint="@color/colorPrimary"
                 android:progressBackgroundTint="@color/wallet_secondary_text_holo_dark" />
         </LinearLayout>
@@ -44,8 +45,6 @@
                 android:id="@+id/etBetVal"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_marginLeft="20sp"
-                android:layout_marginRight="20sp"
                 android:textColor="@android:color/black"
                 android:hint="@string/name_of_marker"
                 android:backgroundTint="@color/colorPrimary"
@@ -53,6 +52,7 @@
                 android:textColorHint="@color/wallet_secondary_text_holo_dark" />
         </LinearLayout>
         <LinearLayout
+            android:layout_marginTop="10dp"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">

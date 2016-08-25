@@ -34,6 +34,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -54,6 +55,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.nearby.messages.Strategy;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -95,6 +97,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             , checkBoxSexta, checkBoxSabado;
     private Typeface font;
     private Vibrator vibrator;
+    private ProgressBar progressBar;
+    private SphericalUtil sphericalUtil;
 
     @TargetApi(Build.VERSION_CODES.M)
     @Override
@@ -103,7 +107,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_maps);
         setUpMapIfNeeded();
 
-        Thread t = new Thread(new Runnable() {
+        final Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
                 SharedPreferences getPrefs = PreferenceManager
@@ -146,6 +150,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         circles = new ArrayList();
         font = Typeface.createFromAsset(getAssets(), "MaterialIcons-Regular.ttf");
         vibrator = (Vibrator) this.getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+        progressBar = (ProgressBar) findViewById(R.id.progress);
+        sphericalUtil = new SphericalUtil();
 
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
@@ -175,33 +181,33 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
+                LayoutInflater layoutInflater = getLayoutInflater();
+                View view = layoutInflater.inflate(R.layout.titulo_alerta_lista_de_marcadores, null);
+                textIconMarkers = (TextView) view.findViewById(R.id.text_icon_markers);
+                textIconMarkers.setTypeface(font);
+                builder.setCustomTitle(view);
+                builder.setAdapter(myAdapter, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(View v) {
-                        final AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
-                        LayoutInflater layoutInflater = getLayoutInflater();
-                        View view = layoutInflater.inflate(R.layout.titulo_alerta_lista_de_marcadores, null);
-                        textIconMarkers = (TextView) view.findViewById(R.id.text_icon_markers);
-                        textIconMarkers.setTypeface(font);
-                        builder.setCustomTitle(view);
-                        builder.setAdapter(myAdapter, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        for (Marcadores marcadores : bdNew.buscar()) {
-                                            if (marcadores != null) {
-                                                if (myAdapter.getItem(which).toString()
-                                                        .equals(marcadores.getEndereco())) {
-                                                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                                                            new LatLng(marcadores.getLatitude(),
-                                                                    marcadores.getLongitude()), 15.0f));
-                                                }
-                                            }
-                                        }
-                                    }
-                                });
-                        myDialog = builder.create();
-                        myDialog.show();
+                    public void onClick(DialogInterface dialog, int which) {
+                        for (Marcadores marcadores : bdNew.buscar()) {
+                            if (marcadores != null) {
+                                if (myAdapter.getItem(which).toString()
+                                        .equals(marcadores.getEndereco())) {
+                                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                                            new LatLng(marcadores.getLatitude(),
+                                                    marcadores.getLongitude()), 15.0f));
+                                }
+                            }
+                        }
                     }
                 });
+                myDialog = builder.create();
+                myDialog.show();
+            }
+        });
 
         menufb = (FloatingActionsMenu) findViewById(R.id.menuFloat);
         menufb.setOnClickListener(new View.OnClickListener() {
@@ -246,7 +252,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         minfb2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                menufb.collapse();
                 try{
                     add(myLatLng);
                 }catch (Exception e){
@@ -403,7 +408,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         final int[] distanceProgress = new int[1];
         final String distanceString;
 
-        distanceInt = (int) SphericalUtil.computeDistanceBetween(myLatLng, latLng);
+        distanceInt = (int) sphericalUtil.computeDistanceBetween(myLatLng, latLng);
         distanceString = " ("+ getResources().getString(R.string.at) + " "
                 + String.valueOf(distanceInt) + " " + getResources().getString(R.string.meters) + ")";
 
@@ -627,7 +632,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Toast.makeText(getApplicationContext(), R.string.local_not_found,
                         Toast.LENGTH_SHORT).show();
             }
-        return false;
+            return false;
         }
 
         @Override
@@ -647,7 +652,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
         circles.remove(circle);
-        System.out.println("qtdCircles: " + circles.size());
     }
 
     private void removeMarker(Marker rMarker) {
@@ -667,6 +671,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         final AlertDialog.Builder builder2 = new AlertDialog.Builder(this);
+        final boolean[] booleanCheckboxArray = new boolean[7];
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             public int distance;
@@ -742,6 +747,23 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
                                 View v = inflater.inflate(R.layout.seekbar, null);
 
+                                checkBoxDomingo = (CheckBox) v.findViewById(R.id.checkbox_domingo);
+                                checkBoxSegunda = (CheckBox) v.findViewById(R.id.checkbox_segunda);
+                                checkBoxTerca = (CheckBox) v.findViewById(R.id.checkbox_terca);
+                                checkBoxQuarta = (CheckBox) v.findViewById(R.id.checkbox_quarta);
+                                checkBoxQuinta = (CheckBox) v.findViewById(R.id.checkbox_quinta);
+                                checkBoxSexta = (CheckBox) v.findViewById(R.id.checkbox_sexta);
+                                checkBoxSabado = (CheckBox) v.findViewById(R.id.checkbox_sabado);
+
+                                boolean[] booleenArray = stringNumberToArrayBoolean(finalMarcadores.getDiasDaSemana());
+                                checkBoxDomingo.setChecked(booleenArray[0]);
+                                checkBoxSegunda.setChecked(booleenArray[1]);
+                                checkBoxTerca.setChecked(booleenArray[2]);
+                                checkBoxQuarta.setChecked(booleenArray[3]);
+                                checkBoxQuinta.setChecked(booleenArray[4]);
+                                checkBoxSexta.setChecked(booleenArray[5]);
+                                checkBoxSabado.setChecked(booleenArray[6]);
+
                                 builder2.setView(v);
 
                                 SeekBar sbBetVal = (SeekBar) v.findViewById(R.id.sbBetVal);
@@ -785,8 +807,18 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                                 if (!etBetVal.getText().toString().isEmpty()) {
                                                     marcadores.setNome(etBetVal.getText().toString());
                                                 }
+
+                                                booleanCheckboxArray[0] = checkBoxDomingo.isChecked();
+                                                booleanCheckboxArray[1] = checkBoxSegunda.isChecked();
+                                                booleanCheckboxArray[2] = checkBoxTerca.isChecked();
+                                                booleanCheckboxArray[3] = checkBoxQuarta.isChecked();
+                                                booleanCheckboxArray[4] = checkBoxQuinta.isChecked();
+                                                booleanCheckboxArray[5] = checkBoxSexta.isChecked();
+                                                booleanCheckboxArray[6] = checkBoxSabado.isChecked();
+
                                                 marcadores.toLong(ativo[0]);
                                                 marcadores.setDistancia(finalProgress[0]);
+                                                marcadores.setDiasDaSemana(arrayBooleanToStringNumber(booleanCheckboxArray));
                                                 //bdOld.atualizar(marcadores);
                                                 bdNew.atualizar(marcadores);
                                                 BDNewToBDOld(bdNew);
@@ -826,27 +858,41 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 myDialog.show();
                             }
                         }).setNegativeButton(R.string.del, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                removeMarker(marker);
-                                for(int i = 0; i < textoNomes.size(); i++){
-                                    if(textoLatLng.get(i).equals(finalMarcadores.getLatitude()+", "
-                                            +finalMarcadores.getLongitude())){
-                                        textoNomes.remove(i);
-                                        textoEnderecos.remove(i);
-                                        booleanAtivos.remove(i);
-                                        textoLatLng.remove(i);
-                                        break;
-                                    }
-                                }
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        removeMarker(marker);
+                        for(int i = 0; i < textoNomes.size(); i++){
+                            if(textoLatLng.get(i).equals(finalMarcadores.getLatitude()+", "
+                                    +finalMarcadores.getLongitude())){
+                                textoNomes.remove(i);
+                                textoEnderecos.remove(i);
+                                booleanAtivos.remove(i);
+                                textoLatLng.remove(i);
+                                break;
                             }
+                        }
+                    }
                 });
                 myDialog = builder.create();
                 myDialog.show();
-            return true;
+                return true;
             }
         });
 
+    }
+
+    public boolean[] stringNumberToArrayBoolean(String number){
+        boolean[] arrayBoolean = new boolean[number.length()];
+
+        for( int i=0; i<number.length(); i++ ){
+            if( String.valueOf(number.charAt(i)).equals("1") ){
+                arrayBoolean[i] = true;
+            }else{
+                arrayBoolean[i] = false;
+            }
+        }
+
+        return arrayBoolean;
     }
 
     private void setUpMapIfNeeded() {

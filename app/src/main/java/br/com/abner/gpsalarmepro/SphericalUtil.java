@@ -27,7 +27,7 @@ import static java.lang.Math.toRadians;
 
 
 public class SphericalUtil {
-    private SphericalUtil() {}
+    SphericalUtil() {}
 
     /**
      * Returns the heading from one LatLng to another LatLng. Headings are

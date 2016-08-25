@@ -38,6 +38,6 @@
     <string name="options">Opções</string>
     <string name="name_of_marker">Nome do marcador</string>
     <string name="description_1">Pode dormir, pode ler, mas nunca mais se preocupe em passar do seu destino</string>
-    <string name="description_2">Pressione o mapa, ative o alarme, dê um raio de distância e relaxe</string>
+    <string name="description_2">Clique no mapa, ative o alarme, dê um raio de distância e relaxe</string>
     <string name="description_3">Pois ler ou dormir durante a viajem nunca foi tão tranquilo</string>
 </resources>
