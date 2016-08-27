@@ -91,11 +91,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private com.getbase.floatingactionbutton.FloatingActionButton minfbAtencao, minfb1, minfb2, minfb3;
     private FloatingActionsMenu menufb;
     private FloatingActionButton fab;
-    private TextView textIconAddMarker, textIconMarkers, textIconEditLocation, textIconListOptions
-            , textIconInfo, textEndereco;
+    private TextView textEndereco;
     private CheckBox checkBoxDomingo, checkBoxSegunda, checkBoxTerca, checkBoxQuarta, checkBoxQuinta
             , checkBoxSexta, checkBoxSabado;
-    private Typeface font;
     private Vibrator vibrator;
     private ProgressBar progressBar;
     private SphericalUtil sphericalUtil;
@@ -148,7 +146,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         marcadores = new Marcadores();
         currentMarcadores = bdNew.buscar();
         circles = new ArrayList();
-        font = Typeface.createFromAsset(getAssets(), "MaterialIcons-Regular.ttf");
         vibrator = (Vibrator) this.getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
         progressBar = (ProgressBar) findViewById(R.id.progress);
         sphericalUtil = new SphericalUtil();
@@ -186,8 +183,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 final AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
                 LayoutInflater layoutInflater = getLayoutInflater();
                 View view = layoutInflater.inflate(R.layout.titulo_alerta_lista_de_marcadores, null);
-                textIconMarkers = (TextView) view.findViewById(R.id.text_icon_markers);
-                textIconMarkers.setTypeface(font);
                 builder.setCustomTitle(view);
                 builder.setAdapter(myAdapter, new DialogInterface.OnClickListener() {
                     @Override
@@ -267,8 +262,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 builder = new AlertDialog.Builder(MapsActivity.this);
                 LayoutInflater layoutInflater = getLayoutInflater();
                 View view = layoutInflater.inflate(R.layout.titulo_alerta_sobre, null);
-                textIconInfo = (TextView) view.findViewById(R.id.text_icon_info);
-                textIconInfo.setTypeface(font);
                 myDialog = builder.setCustomTitle(view)
                         .setMessage(R.string.about)
                         .setNegativeButton(R.string.submit, new DialogInterface.OnClickListener() {
@@ -336,12 +329,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onStart() {
         super.onStart();
         Log.i(TAG, getClassName() + ".onStart() chamado");
+
+        BroadcastReceiverLocation receiverLocation = new BroadcastReceiverLocation(myLatLng);
+        LatLng latLng = receiverLocation.getLatLng();
+
         try {
             LatLngBounds.Builder b = new LatLngBounds.Builder();
-            b.include(myLatLng);
+            b.include(latLng);
             LatLngBounds myLatLngBounds = b.build();
             mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(myLatLngBounds, 0));
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLatLng, 15.0f));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15.0f));
         }catch (Exception e){
         }
     }
@@ -420,8 +417,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     public void onClick(View v) {
                         LayoutInflater layoutInflater = getLayoutInflater();
                         View view = layoutInflater.inflate(R.layout.titulo_alerta_add_marcador, null);
-                        textIconAddMarker = (TextView) view.findViewById(R.id.text_icon_marker);
-                        textIconAddMarker.setTypeface(font);
 
                         textEndereco = (TextView) view.findViewById(R.id.text_endereco);
 
@@ -724,8 +719,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 final Marcadores finalMarcadores = marcadores;
                 LayoutInflater layoutInflater = getLayoutInflater();
                 View view = layoutInflater.inflate(R.layout.titulo_alerta_clique_marcador, null);
-                textIconListOptions = (TextView) view.findViewById(R.id.text_icon_list_options);
-                textIconListOptions.setTypeface(font);
                 builder.setMessage(endereco[0])
                         .setCustomTitle(view)
                         .setPositiveButton(R.string.tools, new DialogInterface.OnClickListener() {
@@ -734,8 +727,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             public void onClick(DialogInterface dialog, int which) {
                                 LayoutInflater layoutInflater = getLayoutInflater();
                                 View view = layoutInflater.inflate(R.layout.titulo_alerta_editar_marcador, null);
-                                textIconEditLocation = (TextView) view.findViewById(R.id.text_icon_edit_location);
-                                textIconEditLocation.setTypeface(font);
                                 builder2.setCustomTitle(view)
                                         .setMultiChoiceItems(alarme, ativo, new DialogInterface.OnMultiChoiceClickListener() {
                                             @Override
@@ -977,7 +968,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         getMenuInflater().inflate(R.menu.search, menu);
 
         MenuItem searchItem = menu.findItem(R.id.action_search);
-        searchItem.setIcon(R.mipmap.search);
+        searchItem.setIcon(R.drawable.ic_search_white_24dp);
         SearchView sv = (SearchView) MenuItemCompat.getActionView(searchItem);
         sv.setOnQueryTextListener(new SearchFiltro());
 

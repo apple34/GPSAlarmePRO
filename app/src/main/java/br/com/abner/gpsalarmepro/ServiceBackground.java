@@ -20,8 +20,6 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.Calendar;
 import java.util.Date;
 
-import br.com.abner.gpsalarmepro.R;
-
 /**
  * Created by Abner on 26/02/2016.
  */
@@ -35,6 +33,8 @@ public class ServiceBackground extends Service {
     private NotificationCompat.Builder notifBuilder;
     private NotificationManager notificationManager;
     private Calendar calendar;
+
+    private Intent intent;
 
     private class LocationListener implements android.location.LocationListener
     {
@@ -53,6 +53,9 @@ public class ServiceBackground extends Service {
         {
             Log.e(TAG, "onLocationChanged: " + location);
             mLastLocation.set(location);
+            intent.putExtra("latitude", location.getLatitude());
+            intent.putExtra("longitude", location.getLongitude());
+            sendBroadcast(intent);
             gpsAlarm(location);
         }
 
@@ -83,7 +86,7 @@ public class ServiceBackground extends Service {
                             , new LatLng(m.getLatitude(), m.getLongitude()));
                     if( distance < m.getDistancia() && checkDay(m.getDiasDaSemana()) ) {
                         notifBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(getApplicationContext())
-                                        .setSmallIcon( R.mipmap.icon3 )
+                                        .setSmallIcon( R.drawable.ic_gps_alarme_pro_white_24 )
                                         .setVibrate( new long[]{ 0, 10000, 0 } )
                                         .setSound(RingtoneManager.getDefaultUri( RingtoneManager.TYPE_ALARM ))
                                         .setContentTitle(m.getNome()+" - "+m.getEndereco());
@@ -124,9 +127,9 @@ public class ServiceBackground extends Service {
                                                         + " " + distance + " " + getResources().getString(R.string.meters))
                                                 .setPriority(2)
                                                 .setColor(getApplicationContext().getResources().getColor(R.color.colorAccent))
-                                                .addAction(R.drawable.ic_add_black_24dp, "100 "
+                                                .addAction(R.drawable.ic_add_white_24dp, "100 "
                                                         + getResources().getString(R.string.meters), pendingIntent1)
-                                                .addAction(R.drawable.ic_alarm_off_black_24dp, ""
+                                                .addAction(R.drawable.ic_alarm_off_white_24dp, ""
                                                         + getResources().getString(R.string.deactive), pendingIntent2)
                                                 .setAutoCancel(true);
                                         notificationManager.notify(0, notifBuilder.build());
@@ -242,6 +245,7 @@ public class ServiceBackground extends Service {
                 = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         calendar = Calendar.getInstance();
+        intent = new Intent(getApplicationContext(), BroadcastReceiverLocation.class);
 
         initializeLocationManager();
         try {

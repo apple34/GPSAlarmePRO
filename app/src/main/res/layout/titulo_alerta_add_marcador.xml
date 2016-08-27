@@ -8,14 +8,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="8">
-        <TextView
-            android:id="@+id/text_icon_marker"
+        <ImageView
+            android:id="@+id/imageview_icon_marker"
             android:layout_width="35sp"
             android:layout_height="35sp"
-            android:textSize="35sp"
-            android:textAlignment="center"
-            android:textColor="@color/white"
-            android:text="@string/icon_marker"
+            android:src="@drawable/ic_place_white_24dp"
             android:layout_gravity="center" />
     </FrameLayout>
     <TextView
@@ -23,6 +20,8 @@
         android:textColor="@android:color/white"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
         android:layout_weight="2"/>
 </LinearLayout>
