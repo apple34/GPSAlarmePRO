@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class BDOldCore extends SQLiteOpenHelper{
     private static final String NOME_BDOld = "OldTable";
-    private static final int VERSAO_BDOld = 4;
+    private static final int VERSAO_BDOld = 5;
 
     public BDOldCore(Context context) {
         super(context, NOME_BDOld, null, VERSAO_BDOld);
@@ -30,7 +30,7 @@ public class BDOldCore extends SQLiteOpenHelper{
 
     @Override
     public void onUpgrade(SQLiteDatabase bd, int oldVersion, int newVersion) {
-        bd.execSQL("DROP TABLE OldTable");
-        onCreate(bd);
+        //bd.execSQL("DROP TABLE OldTable");
+        //onCreate(bd);
     }
 }

@@ -3,6 +3,7 @@ package br.com.abner.gpsalarmepro;
 import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -43,6 +44,7 @@ import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.internal.zzbk;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -97,6 +99,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Vibrator vibrator;
     private ProgressBar progressBar;
     private SphericalUtil sphericalUtil;
+    private ProgressDialog progressDialog;
 
     @TargetApi(Build.VERSION_CODES.M)
     @Override
@@ -184,7 +187,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 LayoutInflater layoutInflater = getLayoutInflater();
                 View view = layoutInflater.inflate(R.layout.titulo_alerta_lista_de_marcadores, null);
                 builder.setCustomTitle(view);
-                builder.setAdapter(myAdapter, new DialogInterface.OnClickListener() {
+
+                if(myAdapter.getCount() == 0)builder.setView(getLayoutInflater().inflate(R.layout.sem_itens, null));
+                else builder.setView(null).setAdapter(myAdapter, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         for (Marcadores marcadores : bdNew.buscar()) {
@@ -199,6 +204,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         }
                     }
                 });
+
                 myDialog = builder.create();
                 myDialog.show();
             }

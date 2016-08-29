@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">GPS Alarme PRO</string>
-    <string name="version">versão 1.4</string>
+    <string name="version">versão 1.5</string>
     <string name="title_activity_maps"><font fgcolor="#ffffffff">GPS Alarme PRO</font></string>
     <string name="raio">Raio de alarme</string>
     <string name="cancel">CANCELAR</string>
@@ -40,4 +40,13 @@
     <string name="description_1">Pode dormir, pode ler, mas nunca mais se preocupe em passar do seu destino</string>
     <string name="description_2">Clique no mapa, ative o alarme, dê um raio de distância e relaxe</string>
     <string name="description_3">Pois ler ou dormir durante a viajem nunca foi tão tranquilo</string>
+    <string name="days_of_week">Dias da semana</string>
+    <string name="sunday">D</string>
+    <string name="monday">S</string>
+    <string name="tuesday">T</string>
+    <string name="wednesday">Q</string>
+    <string name="thursday">Q</string>
+    <string name="friday">S</string>
+    <string name="saturday">S</string>
+    <string name="without_maker">Sem marcadores. Clique no mapa</string>
 </resources>

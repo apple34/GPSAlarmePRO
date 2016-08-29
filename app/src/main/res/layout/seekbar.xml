@@ -52,158 +52,174 @@
                 android:textColorHint="@color/wallet_secondary_text_holo_dark" />
         </LinearLayout>
         <LinearLayout
-            android:layout_marginTop="10dp"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <LinearLayout
                 android:layout_weight="1"
-                android:orientation="vertical"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent">
-                <CheckBox
-                    android:id="@+id/checkbox_domingo"
-                    android:layout_weight="1"
-                    android:layout_gravity="center"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:checked="false"
-                    android:buttonTint="@color/colorPrimary"/>
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
                 <TextView
-                    android:layout_weight="1"
-                    android:text="D"
-                    android:textColor="@color/red"
-                    android:textAlignment="center"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent">
-                <CheckBox
-                    android:id="@+id/checkbox_segunda"
-                    android:layout_weight="1"
-                    android:layout_gravity="center"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:checked="false"
-                    android:buttonTint="@color/colorPrimary"/>
-                <TextView
-                    android:layout_weight="1"
-                    android:text="S"
+                    android:gravity="center"
                     android:textColor="@color/textColorPrimary"
-                    android:textAlignment="center"
+                    android:text="@string/days_of_week"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
             </LinearLayout>
             <LinearLayout
                 android:layout_weight="1"
-                android:orientation="vertical"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent">
-                <CheckBox
-                    android:id="@+id/checkbox_terca"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <LinearLayout
                     android:layout_weight="1"
-                    android:layout_gravity="center"
+                    android:orientation="vertical"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:checked="false"
-                    android:buttonTint="@color/colorPrimary"/>
-                <TextView
+                    android:layout_height="match_parent">
+                    <CheckBox
+                        android:id="@+id/checkbox_domingo"
+                        android:layout_weight="1"
+                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:checked="false"
+                        android:buttonTint="@color/colorPrimary"/>
+                    <TextView
+                        android:layout_weight="1"
+                        android:text="@string/sunday"
+                        android:textColor="@color/red"
+                        android:textAlignment="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+                <LinearLayout
                     android:layout_weight="1"
-                    android:text="T"
-                    android:textColor="@color/textColorPrimary"
-                    android:textAlignment="center"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent">
-                <CheckBox
-                    android:id="@+id/checkbox_quarta"
-                    android:layout_weight="1"
-                    android:layout_gravity="center"
+                    android:orientation="vertical"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:checked="false"
-                    android:buttonTint="@color/colorPrimary"/>
-                <TextView
+                    android:layout_height="match_parent">
+                    <CheckBox
+                        android:id="@+id/checkbox_segunda"
+                        android:layout_weight="1"
+                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:checked="false"
+                        android:buttonTint="@color/colorPrimary"/>
+                    <TextView
+                        android:layout_weight="1"
+                        android:text="@string/monday"
+                        android:textColor="@color/textColorPrimary"
+                        android:textAlignment="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+                <LinearLayout
                     android:layout_weight="1"
-                    android:text="Q"
-                    android:textColor="@color/textColorPrimary"
-                    android:textAlignment="center"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent">
-                <CheckBox
-                    android:id="@+id/checkbox_quinta"
-                    android:layout_weight="1"
-                    android:layout_gravity="center"
+                    android:orientation="vertical"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:checked="false"
-                    android:buttonTint="@color/colorPrimary"/>
-                <TextView
+                    android:layout_height="match_parent">
+                    <CheckBox
+                        android:id="@+id/checkbox_terca"
+                        android:layout_weight="1"
+                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:checked="false"
+                        android:buttonTint="@color/colorPrimary"/>
+                    <TextView
+                        android:layout_weight="1"
+                        android:text="@string/tuesday"
+                        android:textColor="@color/textColorPrimary"
+                        android:textAlignment="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+                <LinearLayout
                     android:layout_weight="1"
-                    android:text="Q"
-                    android:textColor="@color/textColorPrimary"
-                    android:textAlignment="center"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent">
-                <CheckBox
-                    android:id="@+id/checkbox_sexta"
-                    android:layout_weight="1"
-                    android:layout_gravity="center"
+                    android:orientation="vertical"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:checked="false"
-                    android:buttonTint="@color/colorPrimary"/>
-                <TextView
+                    android:layout_height="match_parent">
+                    <CheckBox
+                        android:id="@+id/checkbox_quarta"
+                        android:layout_weight="1"
+                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:checked="false"
+                        android:buttonTint="@color/colorPrimary"/>
+                    <TextView
+                        android:layout_weight="1"
+                        android:text="@string/wednesday"
+                        android:textColor="@color/textColorPrimary"
+                        android:textAlignment="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+                <LinearLayout
                     android:layout_weight="1"
-                    android:text="S"
-                    android:textColor="@color/textColorPrimary"
-                    android:textAlignment="center"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent">
-                <CheckBox
-                    android:id="@+id/checkbox_sabado"
-                    android:layout_weight="1"
-                    android:layout_gravity="center"
+                    android:orientation="vertical"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:checked="false"
-                    android:buttonTint="@color/colorPrimary"/>
-                <TextView
+                    android:layout_height="match_parent">
+                    <CheckBox
+                        android:id="@+id/checkbox_quinta"
+                        android:layout_weight="1"
+                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:checked="false"
+                        android:buttonTint="@color/colorPrimary"/>
+                    <TextView
+                        android:layout_weight="1"
+                        android:text="@string/thursday"
+                        android:textColor="@color/textColorPrimary"
+                        android:textAlignment="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+                <LinearLayout
                     android:layout_weight="1"
-                    android:text="S"
-                    android:textColor="@color/green"
-                    android:textAlignment="center"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    android:orientation="vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent">
+                    <CheckBox
+                        android:id="@+id/checkbox_sexta"
+                        android:layout_weight="1"
+                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:checked="false"
+                        android:buttonTint="@color/colorPrimary"/>
+                    <TextView
+                        android:layout_weight="1"
+                        android:text="@string/friday"
+                        android:textColor="@color/textColorPrimary"
+                        android:textAlignment="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent">
+                    <CheckBox
+                        android:id="@+id/checkbox_sabado"
+                        android:layout_weight="1"
+                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:checked="false"
+                        android:buttonTint="@color/colorPrimary"/>
+                    <TextView
+                        android:layout_weight="1"
+                        android:text="@string/saturday"
+                        android:textColor="@color/green"
+                        android:textAlignment="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
             </LinearLayout>
-
         </LinearLayout>
     </LinearLayout>
 
